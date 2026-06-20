@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Pulse.Views.StartupView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:resources="clr-namespace:Pulse.Resources"
+    Shell.NavBarIsVisible="False"
+    Shell.TabBarIsVisible="False">
+
+    <VerticalStackLayout
+        HorizontalOptions="Center"
+        Spacing="4"
+        VerticalOptions="Center">
+        <Label
+            FontFamily="mdi"
+            FontSize="40"
+            HorizontalOptions="Center"
+            Text="{x:Static resources:MdiIcons.FlagVariant}"
+            TextColor="{DynamicResource Brand}" />
+        <Label
+            FontFamily="SansExtraBold"
+            FontSize="44"
+            HorizontalOptions="Center"
+            Text="Pulse"
+            TextColor="{DynamicResource Ink}" />
+    </VerticalStackLayout>
+
+</ContentPage>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!--
+        THEME-INVARIANT COLORS
+        These look the same in both light and dark themes.
+        Theme-varying colors (Brand, Ink, surfaces, tints, etc.) live in
+        Resources/Themes/LightTheme.xaml and DarkTheme.xaml and are
+        consumed via DynamicResource so they swap at runtime.
+    -->
+
+    <!--  Literal white/black for content sitting on fixed-colour surfaces
+          (e.g. text on a Brand-orange card) where the theme-swapping
+          Surface/Contrast keys would be wrong.  -->
+    <Color x:Key="PureWhite">#FFFFFF</Color>
+    <Color x:Key="PureBlack">#141311</Color>
+
+    <!--  Trophy metals — the same in any theme  -->
+    <Color x:Key="TrophyBronzeBg">#F2E4D4</Color>
+    <Color x:Key="TrophyBronzeFg">#B5701F</Color>
+    <Color x:Key="TrophySilverBg">#EAEAEE</Color>
+    <Color x:Key="TrophySilverFg">#8E8E99</Color>
+    <Color x:Key="TrophyGoldBg">#FCEFC4</Color>
+    <Color x:Key="TrophyGoldFg">#D9A006</Color>
+    <Color x:Key="TrophyDiamondBg">#DFF3FA</Color>
+    <Color x:Key="TrophyDiamondFg">#3FA8CC</Color>
+
+    <!--  Overlays / faint washes used on top of tinted cards  -->
+    <Color x:Key="WhiteOverlay10">#1AFFFFFF</Color>
+    <Color x:Key="WhiteOverlay30">#4DFFFFFF</Color>
+    <Color x:Key="WhiteOverlay85">#D9FFFFFF</Color>
+    <Color x:Key="BlackOverlay10">#1A000000</Color>
+
+</ResourceDictionary>

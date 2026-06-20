@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Pulse.Views.EditProfileView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:resources="clr-namespace:Pulse.Resources"
+    xmlns:ui="clr-namespace:Pulse.UI.Controls"
+    xmlns:views="clr-namespace:Pulse.Views"
+    xmlns:vm="clr-namespace:Pulse.ViewModels"
+    x:DataType="vm:EditProfileViewModel"
+    Shell.NavBarIsVisible="False"
+    Shell.TabBarIsVisible="False">
+
+    <Grid Padding="16,8,16,0" RowDefinitions="Auto,*,Auto">
+
+        <views:SubPageHeader Title="Edit profile" Grid.Row="0" />
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="0,8,0,24" Spacing="16">
+
+                <!--  Avatar + camera badge  -->
+                <Grid HorizontalOptions="Center" WidthRequest="120">
+                    <ui:AvatarView
+                        AvatarUrl="{Binding Me.AvatarUrl}"
+                        DisplayName="{Binding DisplayName}"
+                        Size="120" />
+                    <Border
+                        Background="{DynamicResource Brand}"
+                        HeightRequest="36"
+                        HorizontalOptions="End"
+                        StrokeShape="RoundRectangle 18"
+                        StrokeThickness="0"
+                        VerticalOptions="End"
+                        WidthRequest="36">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ChoosePhotoCommand}" />
+                        </Border.GestureRecognizers>
+                        <Label
+                            FontFamily="mdi"
+                            FontSize="18"
+                            HorizontalOptions="Center"
+                            Text="{x:Static resources:MdiIcons.Camera}"
+                            TextColor="{DynamicResource OnBrand}"
+                            VerticalOptions="Center" />
+                    </Border>
+                </Grid>
+
+                <!--  Take / choose a real photo  -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <Button
+                        Grid.Column="0"
+                        Command="{Binding TakePhotoCommand}"
+                        FontSize="13"
+                        HeightRequest="44"
+                        Style="{StaticResource SecondaryButton}"
+                        Text="Take photo" />
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding ChoosePhotoCommand}"
+                        FontSize="13"
+                        HeightRequest="44"
+                        Style="{StaticResource SecondaryButton}"
+                        Text="Choose photo" />
+                </Grid>
+
+                <!--  Preset avatars  -->
+                <Label Style="{StaticResource SectionLabel}" Text="Pick an avatar" />
+                <FlexLayout
+                    BindableLayout.ItemsSource="{Binding PresetAvatars}"
+                    JustifyContent="SpaceBetween"
+                    Wrap="Wrap">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:PresetAvatarVm">
+                            <Border
+                                Margin="0,0,0,10"
+                                HeightRequest="60"
+                                StrokeShape="RoundRectangle 30"
+                                StrokeThickness="0"
+                                WidthRequest="60">
+                                <Border.Background>
+                                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                                        <GradientStop Offset="0.0" Color="{Binding Top}" />
+                                        <GradientStop Offset="1.0" Color="{Binding Bottom}" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding PickAvatarCommand, Source={RelativeSource AncestorType={x:Type vm:EditProfileViewModel}}, x:DataType=vm:EditProfileViewModel}" CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <Grid>
+                                    <Label
+                                        FontSize="28"
+                                        HorizontalOptions="Center"
+                                        Text="{Binding Emoji}"
+                                        VerticalOptions="Center" />
+                                    <ActivityIndicator
+                                        HeightRequest="24"
+                                        IsRunning="{Binding IsUploading}"
+                                        IsVisible="{Binding IsUploading}"
+                                        WidthRequest="24" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
+
+                <Button
+                    Command="{Binding RemovePhotoCommand}"
+                    IsVisible="{Binding HasAvatar}"
+                    Style="{StaticResource GhostButton}"
+                    Text="Remove photo"
+                    TextColor="{DynamicResource Danger}" />
+
+                <!--  Display name  -->
+                <Label
+                    Margin="0,8,0,0"
+                    Style="{StaticResource SectionLabel}"
+                    Text="Display name" />
+                <Border Style="{StaticResource InputField}">
+                    <Entry Placeholder="Your name" Text="{Binding DisplayName}" />
+                </Border>
+
+                <!--  Username (locked — fixed at sign-up)  -->
+                <Label
+                    Margin="0,8,0,0"
+                    Style="{StaticResource SectionLabel}"
+                    Text="Username" />
+                <Border
+                    Background="{DynamicResource SurfaceAlt}"
+                    Stroke="Transparent"
+                    StrokeShape="RoundRectangle 14"
+                    StrokeThickness="0">
+                    <Grid Padding="16,14" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <Label
+                            Grid.Column="0"
+                            Style="{StaticResource CardTitle}"
+                            Text="{Binding Username, StringFormat='@{0}'}"
+                            TextColor="{DynamicResource InkMid}"
+                            VerticalOptions="Center" />
+                        <Label
+                            Grid.Column="1"
+                            FontFamily="mdi"
+                            FontSize="18"
+                            Text="{x:Static resources:MdiIcons.LockOutline}"
+                            TextColor="{DynamicResource InkLight}"
+                            VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+                <Label
+                    Margin="2,0,0,0"
+                    Style="{StaticResource BodySmall}"
+                    Text="Your username can't be changed."
+                    TextColor="{DynamicResource InkMid}" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!--  Save  -->
+        <Grid Grid.Row="2" Margin="0,8,0,24">
+            <Button
+                Command="{Binding SaveCommand}"
+                IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                Text="Save changes" />
+            <ActivityIndicator
+                HeightRequest="54"
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}" />
+        </Grid>
+
+    </Grid>
+
+</ContentPage>

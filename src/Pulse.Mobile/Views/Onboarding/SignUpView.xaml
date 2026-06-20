@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Pulse.Views.Onboarding.SignUpView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:Pulse.Views"
+    xmlns:vm="clr-namespace:Pulse.ViewModels"
+    x:DataType="vm:SignUpViewModel"
+    Shell.NavBarIsVisible="False"
+    Shell.TabBarIsVisible="False">
+
+    <Grid Padding="16,8,16,32">
+
+        <ScrollView>
+            <VerticalStackLayout Margin="0,48,0,0" Spacing="12">
+            <Label Style="{StaticResource PageTitle}" Text="Create your account" />
+            <Label
+                Margin="0,0,0,16"
+                Style="{StaticResource BodyMedium}"
+                Text="Let's get you set up. We'll sort the details next." />
+
+            <Border Style="{StaticResource InputField}">
+                <Entry
+                    Keyboard="Email"
+                    Placeholder="Email"
+                    Text="{Binding Email}" />
+            </Border>
+
+            <Border Style="{StaticResource InputField}">
+                <Entry
+                    IsPassword="True"
+                    Placeholder="Password (6+ characters)"
+                    Text="{Binding Password}" />
+            </Border>
+
+            <Grid Margin="0,4,0,0">
+                <Button
+                    Command="{Binding CreateAccountCommand}"
+                    IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                    Text="Create account" />
+                <ActivityIndicator
+                    HeightRequest="54"
+                    IsRunning="{Binding IsBusy}"
+                    IsVisible="{Binding IsBusy}" />
+            </Grid>
+
+            <!--  Social sign-in (coming soon)  -->
+            <views:SocialAuthButtons Margin="0,8,0,0" />
+
+            <!--  Switch to sign-in  -->
+            <Button
+                Command="{Binding SignInCommand}"
+                Style="{StaticResource GhostButton}"
+                Text="Already have an account? Log in"
+                TextColor="{DynamicResource InkMid}" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>

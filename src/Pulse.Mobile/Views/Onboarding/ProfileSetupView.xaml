@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Pulse.Views.Onboarding.ProfileSetupView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:ui="clr-namespace:Pulse.UI.Controls"
+    xmlns:vm="clr-namespace:Pulse.ViewModels"
+    x:DataType="vm:ProfileSetupViewModel"
+    Shell.NavBarIsVisible="False"
+    Shell.TabBarIsVisible="False">
+
+    <Grid Padding="28,16,28,32" RowDefinitions="*,Auto">
+
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Spacing="16">
+
+                <VerticalStackLayout Spacing="6">
+                    <Label
+                        HorizontalOptions="Center"
+                        HorizontalTextAlignment="Center"
+                        Style="{StaticResource PageTitle}"
+                        Text="Tell us about yourself" />
+                    <Label
+                        HorizontalOptions="Center"
+                        HorizontalTextAlignment="Center"
+                        Style="{StaticResource BodyMedium}"
+                        Text="This helps your friends find you." />
+                </VerticalStackLayout>
+
+                <!--  Current avatar preview  -->
+                <ui:AvatarView
+                    AvatarUrl="{Binding AvatarUrl}"
+                    DisplayName="{Binding DisplayName}"
+                    HorizontalOptions="Center"
+                    Size="96" />
+
+                <!--  Display name  -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Style="{StaticResource SectionLabel}" Text="Display name" />
+                    <Border Style="{StaticResource InputField}">
+                        <Entry Placeholder="Your name" Text="{Binding DisplayName}" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <!--  Username  -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Style="{StaticResource SectionLabel}" Text="Username" />
+                    <Border Style="{StaticResource InputField}">
+                        <Entry Placeholder="How friends find you" Text="{Binding Username}" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <!--  Avatar picker  -->
+                <VerticalStackLayout Spacing="10">
+                    <Label Style="{StaticResource SectionLabel}" Text="Pick an avatar" />
+                    <FlexLayout
+                        BindableLayout.ItemsSource="{Binding PresetAvatars}"
+                        JustifyContent="SpaceBetween"
+                        Wrap="Wrap">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:PresetAvatarVm">
+                                <Border
+                                    Margin="0,0,0,10"
+                                    HeightRequest="60"
+                                    StrokeShape="RoundRectangle 30"
+                                    StrokeThickness="0"
+                                    WidthRequest="60">
+                                    <Border.Background>
+                                        <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                                            <GradientStop Offset="0.0" Color="{Binding Top}" />
+                                            <GradientStop Offset="1.0" Color="{Binding Bottom}" />
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding PickAvatarCommand, Source={RelativeSource AncestorType={x:Type vm:ProfileSetupViewModel}}, x:DataType=vm:ProfileSetupViewModel}" CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Grid>
+                                        <Label
+                                            FontSize="28"
+                                            HorizontalOptions="Center"
+                                            Text="{Binding Emoji}"
+                                            VerticalOptions="Center" />
+                                        <ActivityIndicator
+                                            HeightRequest="24"
+                                            IsRunning="{Binding IsUploading}"
+                                            IsVisible="{Binding IsUploading}"
+                                            WidthRequest="24" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid Grid.Row="1">
+            <Button
+                Command="{Binding ContinueCommand}"
+                IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                Text="Continue" />
+            <ActivityIndicator
+                HeightRequest="54"
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}" />
+        </Grid>
+
+    </Grid>
+
+</ContentPage>

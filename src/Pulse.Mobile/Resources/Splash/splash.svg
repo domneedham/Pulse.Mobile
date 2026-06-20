@@ -1,0 +1,29 @@
+<svg width="100%" viewBox="0 0 680 680" role="img" xmlns="http://www.w3.org/2000/svg" style="">
+<title style="fill:rgb(0, 0, 0);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">Pulse icon</title>
+<desc style="fill:rgb(0, 0, 0);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">A heartbeat pulse line in a coral-to-purple gradient, running between two glowing dots, with no background.</desc>
+<defs>
+<linearGradient id="pulseGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+<stop offset="0%" stop-color="#ff6b5e"/>
+<stop offset="35%" stop-color="#ff4d7e"/>
+<stop offset="55%" stop-color="#e6479c"/>
+<stop offset="75%" stop-color="#b855d4"/>
+<stop offset="100%" stop-color="#8d6ae8"/>
+</linearGradient>
+<radialGradient id="leftGlow" cx="50%" cy="50%" r="50%">
+<stop offset="0%" stop-color="#ff6b5e" stop-opacity="0.5"/>
+<stop offset="100%" stop-color="#ff6b5e" stop-opacity="0"/>
+</radialGradient>
+<radialGradient id="rightGlow" cx="50%" cy="50%" r="50%">
+<stop offset="0%" stop-color="#8d6ae8" stop-opacity="0.5"/>
+<stop offset="100%" stop-color="#8d6ae8" stop-opacity="0"/>
+</radialGradient>
+</defs>
+
+<circle cx="170" cy="340" r="78" fill="url(#leftGlow)" style="stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+<circle cx="510" cy="340" r="78" fill="url(#rightGlow)" style="stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+<path d="M 170 340&#10;L 224 340&#10;Q 246 340 252 318&#10;L 270 252&#10;Q 280 216 292 250&#10;L 312 408&#10;Q 320 432 330 408&#10;L 350 296&#10;Q 357 264 368 290&#10;L 384 326&#10;Q 392 344 412 336&#10;Q 426 330 438 340&#10;L 470 340&#10;L 510 340" fill="none" stroke="url(#pulseGradient)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" style="fill:none;color:rgb(0, 0, 0);stroke-width:15px;stroke-linecap:round;stroke-linejoin:round;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+<circle cx="170" cy="340" r="36" fill="#ff6b5e" style="fill:rgb(255, 107, 94);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+<circle cx="510" cy="340" r="36" fill="#8d6ae8" style="fill:rgb(141, 106, 232);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+</svg>

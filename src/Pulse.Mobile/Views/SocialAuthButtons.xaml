@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="Pulse.Views.SocialAuthButtons"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:resources="clr-namespace:Pulse.Resources">
+
+    <!--  Apple / Google continue buttons + an "or" divider. Social sign-in has no backend yet, so
+          both buttons pop a "coming soon" note rather than starting an OAuth flow.  -->
+    <VerticalStackLayout Spacing="10">
+
+        <Button
+            Clicked="OnComingSoonTapped"
+            ImageSource="{x:Null}"
+            Style="{StaticResource SecondaryButton}"
+            Text="Continue with Apple">
+            <Button.ImageSource>
+                <FontImageSource
+                    FontFamily="mdi"
+                    Glyph="{x:Static resources:MdiIcons.Apple}"
+                    Color="{DynamicResource Ink}" />
+            </Button.ImageSource>
+        </Button>
+
+        <Button
+            Clicked="OnComingSoonTapped"
+            Style="{StaticResource SecondaryButton}"
+            Text="Continue with Google">
+            <Button.ImageSource>
+                <FontImageSource
+                    FontFamily="mdi"
+                    Glyph="{x:Static resources:MdiIcons.Google}"
+                    Color="{DynamicResource Ink}" />
+            </Button.ImageSource>
+        </Button>
+
+        <!--  "— or —" divider  -->
+        <Grid Margin="0,4" ColumnDefinitions="*,Auto,*" ColumnSpacing="12">
+            <BoxView
+                Grid.Column="0"
+                HeightRequest="1"
+                Color="{DynamicResource Stroke}"
+                VerticalOptions="Center" />
+            <Label
+                Grid.Column="1"
+                Style="{StaticResource BodySmall}"
+                Text="or"
+                VerticalOptions="Center" />
+            <BoxView
+                Grid.Column="2"
+                HeightRequest="1"
+                Color="{DynamicResource Stroke}"
+                VerticalOptions="Center" />
+        </Grid>
+
+    </VerticalStackLayout>
+
+</ContentView>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Pulse.Views.HomeView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:Pulse.ViewModels"
+    x:DataType="vm:HomeViewModel"
+    Shell.NavBarIsVisible="False"
+    Shell.TabBarIsVisible="False">
+
+    <Grid Padding="28,32" RowDefinitions="*,Auto">
+
+        <VerticalStackLayout
+            Grid.Row="0"
+            Spacing="12"
+            VerticalOptions="Center">
+            <Label
+                FontFamily="SansExtraBold"
+                FontSize="48"
+                HorizontalOptions="Center"
+                Text="pulse"
+                TextColor="{DynamicResource Ink}" />
+            <Label
+                HorizontalOptions="Center"
+                HorizontalTextAlignment="Center"
+                Style="{StaticResource BodyMedium}"
+                Text="{Binding DisplayName, StringFormat='Signed in as {0}'}" />
+        </VerticalStackLayout>
+
+        <Button
+            Grid.Row="1"
+            Command="{Binding SignOutCommand}"
+            Style="{StaticResource GhostButton}"
+            Text="Sign out"
+            TextColor="{DynamicResource InkMid}" />
+
+    </Grid>
+
+</ContentPage>

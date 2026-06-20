@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:BottomSheetPage
+    x:Class="Pulse.Views.PromptSheetView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Pulse.UI.Controls"
+    xmlns:vm="clr-namespace:Pulse.ViewModels"
+    Padding="0"
+    x:DataType="vm:PromptSheetViewModel"
+    CloseOnScrimTapped="False"
+    SafeAreaEdges="None">
+
+    <!--  In-theme replacement for the native input alert: a bottom sheet with a drag handle,
+          title + message, a styled entry, and Cancel / Confirm actions.  -->
+    <controls:BottomSheetPage.PopupContent>
+        <Border
+            Background="{DynamicResource Surface}"
+            Stroke="Transparent"
+            StrokeShape="RoundRectangle 24,24,0,0">
+            <Border.Shadow>
+                <Shadow
+                    Brush="{DynamicResource Ink}"
+                    Opacity="0.12"
+                    Radius="16"
+                    Offset="0,-4" />
+            </Border.Shadow>
+            <Grid RowDefinitions="Auto,Auto" SafeAreaEdges="None">
+
+                <BoxView
+                    Grid.Row="0"
+                    Margin="0,8,0,0"
+                    Style="{StaticResource DragHandle}" />
+
+                <Grid
+                    Grid.Row="1"
+                    Padding="16,12,16,32"
+                    RowDefinitions="Auto,Auto,Auto"
+                    RowSpacing="16"
+                    SafeAreaEdges="None">
+
+                    <VerticalStackLayout Grid.Row="0" Spacing="4">
+                        <Label Style="{StaticResource PageTitle}" Text="{Binding Title}" />
+                        <Label
+                            Style="{StaticResource BodyMedium}"
+                            Text="{Binding Message}"
+                            TextColor="{DynamicResource InkMid}" />
+                    </VerticalStackLayout>
+
+                    <Border
+                        Grid.Row="1"
+                        Style="{StaticResource InputField}"
+                        VerticalOptions="Start">
+                        <Entry
+                            HeightRequest="52"
+                            Keyboard="{Binding Keyboard}"
+                            Placeholder="{Binding Placeholder}"
+                            ReturnCommand="{Binding ConfirmCommand}"
+                            ReturnType="Done"
+                            Text="{Binding Value}" />
+                    </Border>
+
+                    <Grid
+                        Grid.Row="2"
+                        ColumnDefinitions="*,*"
+                        ColumnSpacing="12">
+                        <Button
+                            Grid.Column="0"
+                            Command="{Binding CancelCommand}"
+                            Style="{StaticResource SecondaryButton}"
+                            Text="Cancel" />
+                        <Button
+                            Grid.Column="1"
+                            Command="{Binding ConfirmCommand}"
+                            Text="Confirm" />
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Border>
+    </controls:BottomSheetPage.PopupContent>
+
+</controls:BottomSheetPage>
