@@ -69,18 +69,10 @@ public class AvatarView : Border
         Background = new SolidColorBrush(PersonColors.Background(name));
         _initials.TextColor = PersonColors.Foreground(name);
         _initials.FontSize = Size * 0.38;
-        _initials.Text = Initials(name);
+        _initials.Text = PersonColors.Initials(name);
 
         bool hasUrl = !string.IsNullOrWhiteSpace(AvatarUrl);
         _image.IsVisible = hasUrl;
         _image.Source = hasUrl ? ImageSource.FromUri(new Uri(AvatarUrl!)) : null;
-    }
-
-    private static string Initials(string name)
-    {
-        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        return parts.Length >= 2
-            ? $"{char.ToUpperInvariant(parts[0][0])}{char.ToUpperInvariant(parts[^1][0])}"
-            : char.ToUpperInvariant(name[0]).ToString();
     }
 }

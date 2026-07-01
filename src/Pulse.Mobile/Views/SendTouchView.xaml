@@ -25,15 +25,15 @@
 
                 <BoxView Grid.Row="0" Margin="0,4,0,0" Style="{StaticResource DragHandle}" />
 
-                <!--  Title + clear + close  -->
-                <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
-                    <Label Grid.Column="0" Style="{StaticResource PageTitle}" Text="Draw a touch" VerticalOptions="Center" />
+                <!--  Back + title + close — matches the compose sheet's header exactly, so Touch reads
+                      as a sibling step of the same flow rather than a different component.  -->
+                <Grid Grid.Row="1" Margin="0,4,0,8" ColumnDefinitions="Auto,*,Auto">
                     <Button
-                        Grid.Column="1"
-                        Command="{Binding ClearCommand}"
-                        Style="{StaticResource GhostButton}"
-                        Text="Clear"
-                        TextColor="{DynamicResource Brand}" />
+                        Grid.Column="0"
+                        Command="{Binding CloseCommand}"
+                        Style="{StaticResource IconButtonGhost}"
+                        Text="{x:Static resources:MdiIcons.ChevronLeft}" />
+                    <Label Grid.Column="1" Style="{StaticResource PageTitle}" Text="Draw a touch" VerticalOptions="Center" />
                     <Button
                         Grid.Column="2"
                         Command="{Binding CloseCommand}"
@@ -52,41 +52,50 @@
                     <skia:SKCanvasView x:Name="Canvas" EnableTouchEvents="True" />
                 </Border>
 
-                <!--  Colour palette  -->
-                <CollectionView
-                    Grid.Row="3"
-                    HeightRequest="48"
-                    ItemsSource="{Binding Colors}"
-                    SelectionMode="None">
-                    <CollectionView.ItemsLayout>
-                        <LinearItemsLayout ItemSpacing="12" Orientation="Horizontal" />
-                    </CollectionView.ItemsLayout>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="vm:TouchColor">
-                            <Border
-                                Padding="0"
-                                Background="{Binding Hex}"
-                                HeightRequest="36"
-                                StrokeShape="RoundRectangle 18"
-                                StrokeThickness="0"
-                                WidthRequest="36">
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SendTouchViewModel}}, Path=SelectColorCommand}"
-                                        CommandParameter="{Binding .}" />
-                                </Border.GestureRecognizers>
-                                <!--  Selected ring  -->
+                <!--  Colour palette + clear  -->
+                <Grid Grid.Row="3" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <CollectionView
+                        Grid.Column="0"
+                        HeightRequest="48"
+                        ItemsSource="{Binding Colors}"
+                        SelectionMode="None">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout ItemSpacing="12" Orientation="Horizontal" />
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="vm:TouchColor">
                                 <Border
-                                    HeightRequest="44"
-                                    IsVisible="{Binding IsSelected}"
-                                    Stroke="{DynamicResource Ink}"
-                                    StrokeShape="RoundRectangle 22"
-                                    StrokeThickness="2"
-                                    WidthRequest="44" />
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                                    Padding="0"
+                                    Background="{Binding Hex}"
+                                    HeightRequest="36"
+                                    StrokeShape="RoundRectangle 18"
+                                    StrokeThickness="0"
+                                    WidthRequest="36">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SendTouchViewModel}}, Path=SelectColorCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <!--  Selected ring  -->
+                                    <Border
+                                        HeightRequest="44"
+                                        IsVisible="{Binding IsSelected}"
+                                        Stroke="{DynamicResource Ink}"
+                                        StrokeShape="RoundRectangle 22"
+                                        StrokeThickness="2"
+                                        WidthRequest="44" />
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding ClearCommand}"
+                        Style="{StaticResource GhostButton}"
+                        Text="Clear"
+                        TextColor="{DynamicResource Brand}"
+                        VerticalOptions="Center" />
+                </Grid>
 
                 <!--  Send  -->
                 <Grid Grid.Row="4">

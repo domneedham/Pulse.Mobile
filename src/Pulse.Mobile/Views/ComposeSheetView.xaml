@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:BottomSheetPage
+    x:Class="Pulse.Views.ComposeSheetView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Pulse.UI.Controls"
+    xmlns:resources="clr-namespace:Pulse.Resources"
+    xmlns:vm="clr-namespace:Pulse.ViewModels"
+    Padding="0"
+    x:DataType="vm:ComposeSheetViewModel"
+    SafeAreaEdges="None">
+
+    <!--  One continuous, full-height sheet: Categories -> Picker -> Note, with a back arrow between
+          steps, rather than closing this popup and opening a separate one per category.  -->
+    <controls:BottomSheetPage.PopupContent>
+        <Border
+            Background="{DynamicResource Surface}"
+            Stroke="Transparent"
+            StrokeShape="RoundRectangle 24,24,0,0"
+            VerticalOptions="Fill">
+            <Border.Shadow>
+                <Shadow
+                    Brush="{DynamicResource Ink}"
+                    Opacity="0.12"
+                    Radius="16"
+                    Offset="0,-4" />
+            </Border.Shadow>
+
+            <Grid Padding="16,8,16,24" RowDefinitions="Auto,Auto,*" RowSpacing="6" SafeAreaEdges="None">
+
+                <BoxView Grid.Row="0" Style="{StaticResource DragHandle}" />
+
+                <!--  Header: back (Picker/Note only) + title, left-aligned as a pair — close sits alone
+                      on the trailing edge.  -->
+                <Grid Grid.Row="1" Margin="0,4,0,8" ColumnDefinitions="Auto,Auto,*,Auto">
+                    <Button
+                        Grid.Column="0"
+                        Margin="-8,0,0,0"
+                        Command="{Binding BackToCategoriesCommand}"
+                        IsVisible="{Binding IsPickerStep}"
+                        Style="{StaticResource IconButtonGhost}"
+                        Text="{x:Static resources:MdiIcons.ChevronLeft}" />
+                    <Button
+                        Grid.Column="0"
+                        Margin="-8,0,0,0"
+                        Command="{Binding BackToPickerCommand}"
+                        IsVisible="{Binding IsNoteStep}"
+                        Style="{StaticResource IconButtonGhost}"
+                        Text="{x:Static resources:MdiIcons.ChevronLeft}" />
+                    <Label
+                        Grid.Column="1"
+                        Style="{StaticResource PageTitle}"
+                        Text="{Binding PickerTitle}"
+                        IsVisible="{Binding IsCategoriesStep, Converter={StaticResource InvertedBoolConverter}}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Column="1"
+                        Style="{StaticResource PageTitle}"
+                        Text="Send a Signal"
+                        IsVisible="{Binding IsCategoriesStep}"
+                        VerticalOptions="Center" />
+                    <Button
+                        Grid.Column="3"
+                        Command="{Binding CloseCommand}"
+                        Style="{StaticResource IconButtonGhost}"
+                        StyleId="glass"
+                        Text="{x:Static resources:MdiIcons.Close}" />
+                </Grid>
+
+                <!--  STEP 1: category list — full-width rows, not a grid, so this reads as a settings-style
+                      picker consistent with the rest of the app.  -->
+                <ScrollView Grid.Row="2" IsVisible="{Binding IsCategoriesStep}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Style="{StaticResource BodySmall}" Text="How would you like to reach out?" />
+
+                        <Border Padding="14" StrokeShape="RoundRectangle 16" Style="{StaticResource SelectableTile}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding PickMoodCommand}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                                <Border Grid.Column="0" Background="{DynamicResource BrandSoft}" HeightRequest="44" StrokeShape="RoundRectangle 14" StrokeThickness="0" VerticalOptions="Center" WidthRequest="44">
+                                    <controls:AppIcon Color="{DynamicResource Brand}" Icon="Mood" Size="21" />
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <Label FontFamily="SansBold" FontSize="16" Text="Mood" TextColor="{DynamicResource Ink}" />
+                                    <Label Style="{StaticResource Caption}" Text="Share how you're feeling" />
+                                </VerticalStackLayout>
+                                <controls:AppIcon Grid.Column="2" Color="{DynamicResource InkLight}" Icon="ChevronRight" Size="20" VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+
+                        <Border Padding="14" StrokeShape="RoundRectangle 16" Style="{StaticResource SelectableTile}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding PickThoughtCommand}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                                <Border Grid.Column="0" Background="{DynamicResource BrandSoft}" HeightRequest="44" StrokeShape="RoundRectangle 14" StrokeThickness="0" VerticalOptions="Center" WidthRequest="44">
+                                    <controls:AppIcon Color="{DynamicResource Brand}" Icon="Thought" Size="21" />
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <Label FontFamily="SansBold" FontSize="16" Text="Thought" TextColor="{DynamicResource Ink}" />
+                                    <Label Style="{StaticResource Caption}" Text="Share what's on your mind" />
+                                </VerticalStackLayout>
+                                <controls:AppIcon Grid.Column="2" Color="{DynamicResource InkLight}" Icon="ChevronRight" Size="20" VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+
+                        <Border Padding="14" StrokeShape="RoundRectangle 16" Style="{StaticResource SelectableTile}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding PickNeedCommand}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                                <Border Grid.Column="0" Background="{DynamicResource BrandSoft}" HeightRequest="44" StrokeShape="RoundRectangle 14" StrokeThickness="0" VerticalOptions="Center" WidthRequest="44">
+                                    <controls:AppIcon Color="{DynamicResource Brand}" Icon="Need" Size="21" />
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <Label FontFamily="SansBold" FontSize="16" Text="Need" TextColor="{DynamicResource Ink}" />
+                                    <Label Style="{StaticResource Caption}" Text="Let them know what you need" />
+                                </VerticalStackLayout>
+                                <controls:AppIcon Grid.Column="2" Color="{DynamicResource InkLight}" Icon="ChevronRight" Size="20" VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+
+                        <Border Padding="14" StrokeShape="RoundRectangle 16" Style="{StaticResource SelectableTile}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding PickTouchCommand}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                                <Border Grid.Column="0" Background="{DynamicResource AccentSoft}" HeightRequest="44" StrokeShape="RoundRectangle 14" StrokeThickness="0" VerticalOptions="Center" WidthRequest="44">
+                                    <controls:AppIcon Color="{DynamicResource Accent}" Icon="Touch" Size="21" />
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <Label FontFamily="SansBold" FontSize="16" Text="Touch" TextColor="{DynamicResource Ink}" />
+                                    <Label Style="{StaticResource Caption}" Text="Say something without words" />
+                                </VerticalStackLayout>
+                                <controls:AppIcon Grid.Column="2" Color="{DynamicResource InkLight}" Icon="ChevronRight" Size="20" VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+
+                        <Border Padding="14" Background="{DynamicResource BrandSoft}" Stroke="Transparent" StrokeShape="RoundRectangle 16" StrokeThickness="0">
+                            <HorizontalStackLayout Spacing="10">
+                                <controls:AppIcon Color="{DynamicResource Brand}" Icon="Sparkles" Size="18" VerticalOptions="Center" />
+                                <Label Style="{StaticResource BodySmall}" Text="Signals are short, sweet and always appreciated." VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+                </ScrollView>
+
+                <!--  STEP 2 + 3: picker (favourites / more options / custom) and note, sharing the same
+                      footer area used by the picker's "write your own" row and the note step's Send button  -->
+                <Grid
+                    Grid.Row="2"
+                    IsVisible="{Binding IsCategoriesStep, Converter={StaticResource InvertedBoolConverter}}"
+                    RowDefinitions="*,Auto"
+                    RowSpacing="10">
+
+                    <!--  Picker: every row (favourite or catalogue) shares the same bordered-row style;
+                          favourites carry a star instead of living in a visually distinct section.  -->
+                    <ScrollView Grid.Row="0" IsVisible="{Binding IsPickerStep}">
+                        <VerticalStackLayout Spacing="8">
+
+                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Favorites}" Spacing="8">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:PhraseRow">
+                                        <Border Padding="14,12" StrokeShape="RoundRectangle 14" Style="{StaticResource SelectableTile}">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ComposeSheetViewModel}}, Path=PickCommand}"
+                                                    CommandParameter="{Binding .}" />
+                                            </Border.GestureRecognizers>
+                                            <Grid ColumnDefinitions="Auto,*">
+                                                <controls:AppIcon Grid.Column="0" Color="{DynamicResource Brand}" Icon="StarFilled" Size="16" VerticalOptions="Center" />
+                                                <Label Grid.Column="1" Margin="12,0,0,0" FontFamily="SansMedium" FontSize="16" Text="{Binding Text}" TextColor="{DynamicResource Ink}" VerticalOptions="Center" />
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
+
+                            <Label
+                                Margin="0,8,0,0"
+                                IsVisible="{Binding HasMoreOptions}"
+                                Style="{StaticResource SectionLabel}"
+                                Text="MORE OPTIONS" />
+                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding MoreOptions}" Spacing="8">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:PhraseRow">
+                                        <Border Padding="14,12" StrokeShape="RoundRectangle 14" Style="{StaticResource SelectableTile}">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ComposeSheetViewModel}}, Path=PickCommand}"
+                                                    CommandParameter="{Binding .}" />
+                                            </Border.GestureRecognizers>
+                                            <Label FontFamily="SansMedium" FontSize="16" Text="{Binding Text}" TextColor="{DynamicResource Ink}" VerticalOptions="Center" />
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </ScrollView>
+
+                    <!--  Note  -->
+                    <ScrollView Grid.Row="0" IsVisible="{Binding IsNoteStep}">
+                        <VerticalStackLayout Spacing="14">
+                            <Border Padding="14" Background="{DynamicResource BrandSoft}" Stroke="Transparent" StrokeShape="RoundRectangle 16" StrokeThickness="0">
+                                <HorizontalStackLayout Spacing="12">
+                                    <controls:AppIcon Color="{DynamicResource Brand}" Icon="{Binding PickerIcon}" Size="22" VerticalOptions="Center" />
+                                    <Label FontFamily="SansBold" FontSize="18" Text="{Binding SelectedText}" TextColor="{DynamicResource Ink}" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                            </Border>
+
+                            <Label Style="{StaticResource SectionLabel}" Text="ADD A NOTE (OPTIONAL)" />
+                            <Border Padding="12,4" Style="{StaticResource InputField}">
+                                <Editor
+                                    AutoSize="TextChanges"
+                                    HeightRequest="90"
+                                    MaxLength="80"
+                                    Placeholder="A little something to go with it…"
+                                    Text="{Binding Note}" />
+                            </Border>
+                        </VerticalStackLayout>
+                    </ScrollView>
+
+                    <!--  Footer: picker = custom entry, always pinned at the bottom; note step = Send  -->
+                    <VerticalStackLayout Grid.Row="1" Spacing="8">
+                        <Border IsVisible="{Binding IsPickerStep}" Style="{StaticResource InputField}">
+                            <Entry
+                                Placeholder="Or write your own…"
+                                ReturnCommand="{Binding ContinueWithCustomCommand}"
+                                ReturnType="Next"
+                                Text="{Binding CustomText}" />
+                        </Border>
+
+                        <Button
+                            Command="{Binding SendCommand}"
+                            IsVisible="{Binding IsNoteStep}"
+                            Text="Send" />
+                    </VerticalStackLayout>
+                </Grid>
+
+            </Grid>
+        </Border>
+    </controls:BottomSheetPage.PopupContent>
+
+</controls:BottomSheetPage>

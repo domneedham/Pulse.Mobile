@@ -157,8 +157,9 @@ public partial class PulseDetailViewModel(
     }
 
     [RelayCommand]
-    private Task SendOneBack() =>
-        navigationService.GoToAsync(Navigation.Relative().Push<SendThoughtViewModel>());
+    private Task SendOneBack() => navigationService.GoToAsync(Navigation.Relative()
+        .Push<ComposeSheetViewModel>()
+        .WithIntent(new ComposeSheetIntent(PulseType.Thought)));
 
     [RelayCommand]
     private async Task Delete()

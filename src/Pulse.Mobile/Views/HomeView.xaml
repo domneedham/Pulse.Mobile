@@ -7,28 +7,12 @@
     xmlns:resources="clr-namespace:Pulse.Resources"
     xmlns:vm="clr-namespace:Pulse.ViewModels"
     x:DataType="vm:HomeViewModel"
-    Shell.NavBarIsVisible="False">
+    Title="Home">
 
+    <Grid>
     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsRefreshing}">
         <ScrollView>
             <VerticalStackLayout Padding="20,24,20,28" Spacing="26">
-
-                <!--  Header: greeting + avatar  -->
-                <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
-                    <VerticalStackLayout Grid.Column="0" Spacing="2">
-                        <Label Style="{StaticResource BodyMedium}" Text="{Binding Greeting}" />
-                        <Label
-                            FontFamily="SansExtraBold"
-                            FontSize="30"
-                            Text="{Binding DisplayName}"
-                            TextColor="{DynamicResource Ink}" />
-                    </VerticalStackLayout>
-                    <controls:AvatarView
-                        Grid.Column="1"
-                        AvatarUrl="{Binding AvatarUrl}"
-                        DisplayName="{Binding DisplayName}"
-                        Size="44" />
-                </Grid>
 
                 <!--  Today's Moment  -->
                 <VerticalStackLayout IsVisible="{Binding HasMoment}" Spacing="10">
@@ -63,20 +47,39 @@
                                     <Label FontFamily="SansExtraBold" FontSize="26" Text="{Binding TodaysMoment.Title}" TextColor="{DynamicResource Ink}" />
                                     <Label Style="{StaticResource BodyMedium}" Text="{Binding TodaysMoment.Prompt}" />
                                 </VerticalStackLayout>
-                                <Border
+                                <!--  Thumbnail slot: partner's and mine overlap into a scattered-Polaroid
+                                      stack — each tile is nudged a few degrees off-axis in opposite
+                                      directions, so the back tile's corners peek out from behind the
+                                      front one instead of being fully hidden behind identical square
+                                      edges. Either tile shows its photo/drawing, or (via
+                                      MomentThumbnailView) that person's initials on their colour if they
+                                      haven't answered with one yet, so an empty slot still reads as "this
+                                      person hasn't shared a photo" rather than nothing.  -->
+                                <Grid
                                     Grid.Column="1"
-                                    HeightRequest="92"
+                                    HeightRequest="88"
                                     IsVisible="{Binding TodaysMoment.HasThumbnail}"
-                                    Stroke="Transparent"
-                                    StrokeShape="RoundRectangle 14"
-                                    StrokeThickness="0"
                                     VerticalOptions="Center"
-                                    WidthRequest="72">
-                                    <Grid>
-                                        <Image Aspect="AspectFill" IsVisible="{Binding TodaysMoment.HasPhoto}" Source="{Binding TodaysMoment.PhotoUrl}" />
-                                        <controls:StrokeView IsVisible="{Binding TodaysMoment.HasDrawing}" StrokeData="{Binding TodaysMoment.StrokeData}" />
-                                    </Grid>
-                                </Border>
+                                    WidthRequest="100">
+                                    <controls:MomentThumbnailView
+                                        HeightRequest="80"
+                                        HorizontalOptions="Start"
+                                        PersonName="{Binding TodaysMoment.PartnerName}"
+                                        PhotoUrl="{Binding TodaysMoment.PartnerPhotoUrl}"
+                                        Rotation="-12"
+                                        StrokeData="{Binding TodaysMoment.PartnerStrokeData}"
+                                        WidthRequest="64"
+                                        ZIndex="0" />
+                                    <controls:MomentThumbnailView
+                                        HeightRequest="80"
+                                        HorizontalOptions="End"
+                                        PersonName="{Binding TodaysMoment.MyName}"
+                                        PhotoUrl="{Binding TodaysMoment.MyPhotoUrl}"
+                                        Rotation="12"
+                                        StrokeData="{Binding TodaysMoment.MyStrokeData}"
+                                        WidthRequest="64"
+                                        ZIndex="1" />
+                                </Grid>
                             </Grid>
 
                             <!--  Two-avatar progress row  -->
@@ -142,50 +145,6 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <!--  Quick Signals  -->
-                <VerticalStackLayout Spacing="12">
-                    <Label FontFamily="SansExtraBold" FontSize="20" Text="Quick Signals" TextColor="{DynamicResource Ink}" />
-                    <Label Style="{StaticResource BodySmall}" Text="Send a quick check-in anytime" />
-                    <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="12">
-                        <VerticalStackLayout Grid.Column="0" Spacing="8">
-                            <VerticalStackLayout.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding SendMoodCommand}" />
-                            </VerticalStackLayout.GestureRecognizers>
-                            <Border Background="{DynamicResource BrandSoft}" HeightRequest="62" HorizontalOptions="Fill" StrokeShape="RoundRectangle 18" StrokeThickness="0">
-                                <controls:AppIcon Color="{DynamicResource Brand}" Icon="Mood" Size="26" />
-                            </Border>
-                            <Label HorizontalOptions="Center" Style="{StaticResource Caption}" Text="Mood" />
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="1" Spacing="8">
-                            <VerticalStackLayout.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding SendThoughtCommand}" />
-                            </VerticalStackLayout.GestureRecognizers>
-                            <Border Background="{DynamicResource BrandSoft}" HeightRequest="62" HorizontalOptions="Fill" StrokeShape="RoundRectangle 18" StrokeThickness="0">
-                                <controls:AppIcon Color="{DynamicResource Brand}" Icon="Thought" Size="26" />
-                            </Border>
-                            <Label HorizontalOptions="Center" Style="{StaticResource Caption}" Text="Thought" />
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="2" Spacing="8">
-                            <VerticalStackLayout.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding SendNeedCommand}" />
-                            </VerticalStackLayout.GestureRecognizers>
-                            <Border Background="{DynamicResource BrandSoft}" HeightRequest="62" HorizontalOptions="Fill" StrokeShape="RoundRectangle 18" StrokeThickness="0">
-                                <controls:AppIcon Color="{DynamicResource Brand}" Icon="Need" Size="26" />
-                            </Border>
-                            <Label HorizontalOptions="Center" Style="{StaticResource Caption}" Text="Need" />
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="3" Spacing="8">
-                            <VerticalStackLayout.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding SendTouchCommand}" />
-                            </VerticalStackLayout.GestureRecognizers>
-                            <Border Background="{DynamicResource AccentSoft}" HeightRequest="62" HorizontalOptions="Fill" StrokeShape="RoundRectangle 18" StrokeThickness="0">
-                                <controls:AppIcon Color="{DynamicResource Accent}" Icon="Touch" Size="26" />
-                            </Border>
-                            <Label HorizontalOptions="Center" Style="{StaticResource Caption}" Text="Touch" />
-                        </VerticalStackLayout>
-                    </Grid>
-                </VerticalStackLayout>
-
                 <!--  Latest Signal  -->
                 <VerticalStackLayout Spacing="12">
                     <Grid ColumnDefinitions="*,Auto">
@@ -230,7 +189,7 @@
                             <Label HorizontalOptions="Center" Style="{StaticResource BodySmall}" Text="Send the first signal." />
                             <Button
                                 Margin="0,4,0,0"
-                                Command="{Binding SendThoughtCommand}"
+                                Command="{Binding OpenComposeCommand}"
                                 Style="{StaticResource SecondaryButton}"
                                 Text="Send a signal" />
                         </VerticalStackLayout>
@@ -240,5 +199,8 @@
             </VerticalStackLayout>
         </ScrollView>
     </RefreshView>
+
+    <controls:ComposeButton />
+    </Grid>
 
 </ContentPage>

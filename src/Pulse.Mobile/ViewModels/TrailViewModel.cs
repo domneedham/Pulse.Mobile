@@ -123,6 +123,10 @@ public partial class TrailViewModel(
         navigationService.GoToAsync(Navigation.Relative().Push<MomentsViewModel>());
 
     [RelayCommand]
+    private Task OpenCompose() =>
+        navigationService.GoToAsync(Navigation.Relative().Push<ComposeSheetViewModel>());
+
+    [RelayCommand]
     private Task OpenItem(TrailRowVm row) => row.Kind switch
     {
         TrailItemKind.Moment => navigationService.GoToAsync(Navigation.Relative().Push<MomentDetailViewModel>()

@@ -10,5 +10,6 @@ public partial class TrailView : ContentPage
         InitializeComponent();
         BindingContext = vm;
         LargeTitles.Enable(this);
+        ComposeToolbarItem.Add(this, vm.OpenComposeCommand);
     }
 }

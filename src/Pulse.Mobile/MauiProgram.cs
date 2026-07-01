@@ -55,9 +55,9 @@ public static class MauiProgram
                 }
             });
 
-        // Liquid Glass close buttons: any Button with StyleId="glass" (the sheet X buttons) gets the
-        // native iOS 26 glass button material. On older iOS the call isn't available, so it falls back
-        // to the existing ghost styling — no visual regression.
+        // Liquid Glass close buttons: any Button with StyleId="glass" (the sheet X buttons, all of
+        // which use the MDI "close" glyph) gets the native iOS 26 glass button material. On older iOS
+        // the call isn't available, so it falls back to the existing ghost styling — no visual regression.
         Microsoft.Maui.Handlers.ButtonHandler.Mapper.AppendToMapping(
             "LiquidGlassButton",
             (handler, view) =>
@@ -72,18 +72,17 @@ public static class MauiProgram
                     var config = UIKit.UIButtonConfiguration.GlassButtonConfiguration;
                     config.CornerStyle = UIKit.UIButtonConfigurationCornerStyle.Capsule;
 
-                    // The glass config replaces the button's content, so re-apply the MDI glyph (the
-                    // button's Text) as an attributed title using the mdi font, or it renders empty.
-                    var glyph = glassButton.Text ?? string.Empty;
+                    // The glass config replaces the button's content, so re-apply its glyph — as the
+                    // native "xmark" SF Symbol, not the MDI font's attributed text. The MDI font's
+                    // PostScript name can fail to resolve inside a UIButtonConfiguration (unlike a plain
+                    // Label), silently falling back to the system font, which has no glyph for the MDI
+                    // private-use-area character and renders as a "missing glyph" box.
                     var color = glassButton.TextColor?.ToPlatform() ?? UIKit.UIColor.Label;
-                    // iOS needs the font's PostScript name, not the MAUI "mdi" alias.
-                    var font = UIKit.UIFont.FromName("MaterialDesignIcons", 20)
-                        ?? UIKit.UIFont.FromName("Material Design Icons", 20)
-                        ?? UIKit.UIFont.SystemFontOfSize(20);
-                    config.AttributedTitle = new Foundation.NSAttributedString(
-                        glyph,
-                        font: font,
-                        foregroundColor: color);
+                    var icon = UIKit.UIImage.GetSystemImage("xmark")?.ApplyTintColor(color, UIKit.UIImageRenderingMode.AlwaysOriginal);
+                    if (icon is not null)
+                    {
+                        config.Image = icon;
+                    }
 
                     handler.PlatformView.Configuration = config;
                 }
@@ -121,14 +120,12 @@ public static class MauiProgram
                 .AddPage<RespondChoiceViewModel, RespondChoiceView>()
                 .AddPage<RespondVoiceViewModel, RespondVoiceView>()
                 .AddPage<ProfileViewModel, ProfileView>()
-                .AddPage<SendMoodViewModel, SendMoodView>()
-                .AddPage<SendNeedViewModel, SendNeedView>()
-                .AddPage<SendThoughtViewModel, SendThoughtView>()
                 .AddPage<SendTouchViewModel, SendTouchView>()
                 .AddPage<EditProfileViewModel, EditProfileView>()
                 .AddPage<AppSettingsViewModel, AppSettingsView>()
                 .AddPage<HelpSupportViewModel, HelpSupportView>()
                 .AddPage<PromptSheetViewModel, PromptSheetView>()
+                .AddPage<ComposeSheetViewModel, ComposeSheetView>()
             )
             .ConfigureFonts(fonts =>
             {

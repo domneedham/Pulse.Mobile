@@ -9,6 +9,7 @@
     x:DataType="vm:ProfileViewModel"
     Title="Profile">
 
+    <Grid>
     <ScrollView>
         <VerticalStackLayout Padding="20,24,20,32" Spacing="20">
 
@@ -115,5 +116,8 @@
 
         </VerticalStackLayout>
     </ScrollView>
+
+    <controls:ComposeButton />
+    </Grid>
 
 </ContentPage>

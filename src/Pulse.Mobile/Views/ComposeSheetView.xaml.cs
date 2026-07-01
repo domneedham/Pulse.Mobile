@@ -3,9 +3,9 @@ using Pulse.ViewModels;
 
 namespace Pulse.Views;
 
-public partial class SendThoughtView : BottomSheetPage
+public partial class ComposeSheetView : BottomSheetPage
 {
-    public SendThoughtView(SendThoughtViewModel vm)
+    public ComposeSheetView(ComposeSheetViewModel vm)
     {
         InitializeComponent();
         BindingContext = vm;

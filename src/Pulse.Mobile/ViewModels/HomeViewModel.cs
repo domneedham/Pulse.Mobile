@@ -30,13 +30,16 @@ public record TodaysMomentVm(
     string PartnerName,
     string? PartnerAvatarUrl,
     bool PartnerDone,
-    // Optional thumbnail once completed
-    string? PhotoUrl,
-    string? StrokeData)
+    // Optional thumbnails once completed — each person's own response, so both show when both
+    // answered with a photo/drawing (not just whichever happened to come first from the API).
+    string? MyPhotoUrl,
+    string? MyStrokeData,
+    string? PartnerPhotoUrl,
+    string? PartnerStrokeData)
 {
-    public bool HasPhoto => !string.IsNullOrEmpty(PhotoUrl);
-    public bool HasDrawing => !string.IsNullOrEmpty(StrokeData);
-    public bool HasThumbnail => HasPhoto || HasDrawing;
+    public bool HasThumbnail =>
+        !string.IsNullOrEmpty(MyPhotoUrl) || !string.IsNullOrEmpty(MyStrokeData) ||
+        !string.IsNullOrEmpty(PartnerPhotoUrl) || !string.IsNullOrEmpty(PartnerStrokeData);
 }
 
 /// <summary>
@@ -52,7 +55,6 @@ public partial class HomeViewModel(
     IAlertService alerts,
     ILogger<HomeViewModel> logger) : ObservableObject, IAppearingAware
 {
-    public string Greeting => $"{TimeOfDayGreeting()},";
     public string DisplayName => userSession.DisplayName;
     public string? AvatarUrl => userSession.AvatarUrl;
 
@@ -155,10 +157,8 @@ public partial class HomeViewModel(
                         ? $"{PartnerName} has answered — your turn"
                         : "A new moment to share today";
 
-            var photo = m.Responses.FirstOrDefault(r => !string.IsNullOrEmpty(r.PhotoUrl))?.PhotoUrl;
-            var drawing = photo is null
-                ? m.Responses.FirstOrDefault(r => !string.IsNullOrEmpty(r.StrokeData))?.StrokeData
-                : null;
+            var myResponse = m.Responses.FirstOrDefault(r => r.SubmittedByMe);
+            var partnerResponse = m.Responses.FirstOrDefault(r => !r.SubmittedByMe);
 
             TodaysMoment = new TodaysMomentVm(
                 m.Id,
@@ -176,8 +176,10 @@ public partial class HomeViewModel(
                 PartnerName: PartnerName,
                 PartnerAvatarUrl: PartnerAvatarUrl,
                 PartnerDone: m.PartnerResponded,
-                PhotoUrl: photo,
-                StrokeData: drawing);
+                MyPhotoUrl: myResponse?.PhotoUrl,
+                MyStrokeData: myResponse?.StrokeData,
+                PartnerPhotoUrl: partnerResponse?.PhotoUrl,
+                PartnerStrokeData: partnerResponse?.StrokeData);
         }
         catch (Exception ex)
         {
@@ -216,21 +218,5 @@ public partial class HomeViewModel(
         navigationService.GoToAsync(Navigation.Absolute(NavigationBehavior.Immediate).Root<TrailViewModel>());
 
     [RelayCommand]
-    private Task SendMood() => navigationService.GoToAsync(Navigation.Relative().Push<SendMoodViewModel>());
-
-    [RelayCommand]
-    private Task SendNeed() => navigationService.GoToAsync(Navigation.Relative().Push<SendNeedViewModel>());
-
-    [RelayCommand]
-    private Task SendThought() => navigationService.GoToAsync(Navigation.Relative().Push<SendThoughtViewModel>());
-
-    [RelayCommand]
-    private Task SendTouch() => navigationService.GoToAsync(Navigation.Relative().Push<SendTouchViewModel>());
-
-    private static string TimeOfDayGreeting() => DateTime.Now.Hour switch
-    {
-        < 12 => "Good morning",
-        < 18 => "Good afternoon",
-        _ => "Good evening"
-    };
+    private Task OpenCompose() => navigationService.GoToAsync(Navigation.Relative().Push<ComposeSheetViewModel>());
 }

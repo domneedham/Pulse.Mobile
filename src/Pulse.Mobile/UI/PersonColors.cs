@@ -31,6 +31,17 @@ public static class PersonColors
     /// </summary>
     public static Color CardTint(string? name) => Blend(Pick(name).Bg, Colors.White, 0.35);
 
+    /// <summary>One or two initials for a name — shared by <see cref="Controls.AvatarView"/> and any
+    /// other "photo not yet available" placeholder that needs to denote the same person consistently.</summary>
+    public static string Initials(string? name)
+    {
+        var trimmed = string.IsNullOrWhiteSpace(name) ? "?" : name.Trim();
+        var parts = trimmed.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        return parts.Length >= 2
+            ? $"{char.ToUpperInvariant(parts[0][0])}{char.ToUpperInvariant(parts[^1][0])}"
+            : char.ToUpperInvariant(trimmed[0]).ToString();
+    }
+
     private static Color Blend(Color color, Color over, double amount) => new(
         (float)(color.Red * amount + over.Red * (1 - amount)),
         (float)(color.Green * amount + over.Green * (1 - amount)),

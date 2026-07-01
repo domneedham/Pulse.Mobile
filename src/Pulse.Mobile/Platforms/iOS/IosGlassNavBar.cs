@@ -66,5 +66,28 @@ internal static class IosGlassNavBar
         // bleed to Y=0 and scroll beneath the bar rather than being pushed below a safe-area inset.
         viewController.EdgesForExtendedLayout = UIRectEdge.All;
         viewController.ExtendedLayoutIncludesOpaqueBars = true;
+
+        // UINavigationBarAppearance.ShadowColor only affects a plain UIKit UINavigationController.
+        // MAUI Shell renders through its own compatibility nav bar (MauiNavigationBar), which still
+        // draws a private _UIBarBackgroundShadowView regardless of the appearance object — confirmed
+        // via Xcode's view debugger. Hide that view directly since there's no public API for it.
+        if (viewController.NavigationController?.NavigationBar is { } navigationBar)
+        {
+            HideBarBackgroundShadow(navigationBar);
+        }
+    }
+
+    private static void HideBarBackgroundShadow(UIView root)
+    {
+        foreach (var subview in root.Subviews)
+        {
+            if (subview.Class.Name == "_UIBarBackgroundShadowView")
+            {
+                subview.Hidden = true;
+                continue;
+            }
+
+            HideBarBackgroundShadow(subview);
+        }
     }
 }
