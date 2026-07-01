@@ -8,12 +8,14 @@
         <Setter Property="Background" Value="#80000000" />
     </Style>
 
+    <!--  Bottom sheets fill the height (leaving a small top gap for the status area, like iOS sheets).
+          The sheet content Border inside should use VerticalOptions="Fill" so it stretches to fill this.  -->
     <Style TargetType="nalu:PopupContainer">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Margin" Value="0" />
+        <Setter Property="Margin" Value="0,60,0,0" />
         <Setter Property="StrokeShape" Value="Rectangle" />
         <Setter Property="StrokeThickness" Value="0" />
-        <Setter Property="VerticalOptions" Value="End" />
+        <Setter Property="VerticalOptions" Value="Fill" />
         <Setter Property="HorizontalOptions" Value="Fill" />
     </Style>
 

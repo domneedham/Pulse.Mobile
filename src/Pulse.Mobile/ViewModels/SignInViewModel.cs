@@ -9,6 +9,8 @@ namespace Pulse.ViewModels;
 public partial class SignInViewModel(
     IAuthService authService,
     UserSession userSession,
+    ConnectionSession connectionSession,
+    FavoritesSession favoritesSession,
     INavigationService navigationService,
     IAlertService alerts) : ObservableObject
 {
@@ -33,7 +35,7 @@ public partial class SignInViewModel(
         try
         {
             await authService.SignInAsync(Email.Trim(), Password);
-            await AuthRouting.GoAfterAuthAsync(userSession, navigationService);
+            await AuthRouting.GoAfterAuthAsync(userSession, connectionSession, favoritesSession, navigationService);
         }
         catch (Exception ex)
         {

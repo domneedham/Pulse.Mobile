@@ -7,4 +7,7 @@
 	<!-- Profile photo capture; camera is optional so the app still installs on camera-less devices. -->
 	<uses-permission android:name="android.permission.CAMERA" />
 	<uses-feature android:name="android.hardware.camera" android:required="false" />
+	<!-- Voice Moments: record audio. Microphone optional so the app installs on mic-less devices. -->
+	<uses-permission android:name="android.permission.RECORD_AUDIO" />
+	<uses-feature android:name="android.hardware.microphone" android:required="false" />
 </manifest>

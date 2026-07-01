@@ -20,6 +20,7 @@ namespace Pulse.ViewModels;
 public partial class ProfileSetupViewModel(
     IPulseApiClient api,
     UserSession userSession,
+    ConnectionSession connectionSession,
     INavigationService navigationService,
     IAlertService alerts) : ObservableObject
 {
@@ -111,7 +112,10 @@ public partial class ProfileSetupViewModel(
             IsBusy = false;
         }
 
-        await AuthRouting.GoAfterAuthAsync(userSession, navigationService);
+        // New users continue to the favourites picker; it loads sessions + routes into the app after.
+        await userSession.LoadAsync();
+        await navigationService.GoToAsync(
+            Navigation.Relative().Push<FavoritesOnboardingViewModel>().WithIntent(new FavoritesOnboardingIntent()));
     }
 
     private static bool IsUsernameWellFormed(string username)

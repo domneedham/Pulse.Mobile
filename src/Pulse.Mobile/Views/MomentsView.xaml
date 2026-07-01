@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Pulse.Views.MomentsView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Pulse.UI.Controls"
+    xmlns:resources="clr-namespace:Pulse.Resources"
+    xmlns:vm="clr-namespace:Pulse.ViewModels"
+    x:DataType="vm:MomentsViewModel"
+    Title="Moments"
+    Shell.TabBarIsVisible="False">
+
+    <Grid Padding="20,12,20,0" RowDefinitions="Auto,*" RowSpacing="12">
+
+        <!--  All / Favorites tabs  -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,*" ColumnSpacing="10">
+            <Border
+                Grid.Column="0"
+                Padding="0,10"
+                Background="{Binding AllTab, Converter={StaticResource ChipFill}}"
+                Stroke="{DynamicResource Stroke}"
+                StrokeShape="RoundRectangle 12"
+                StrokeThickness="1">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectAllCommand}" />
+                </Border.GestureRecognizers>
+                <Label FontFamily="SansSemiBold" FontSize="14" HorizontalOptions="Center" Text="All" TextColor="{DynamicResource Ink}" />
+            </Border>
+            <Border
+                Grid.Column="1"
+                Padding="0,10"
+                Background="{Binding FavoritesTab, Converter={StaticResource ChipFill}}"
+                Stroke="{DynamicResource Stroke}"
+                StrokeShape="RoundRectangle 12"
+                StrokeThickness="1">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectFavoritesCommand}" />
+                </Border.GestureRecognizers>
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="6">
+                    <controls:AppIcon Color="{DynamicResource Accent}" Icon="Star" Size="15" VerticalOptions="Center" />
+                    <Label FontFamily="SansSemiBold" FontSize="14" Text="Favorites" TextColor="{DynamicResource Ink}" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Border>
+        </Grid>
+
+        <RefreshView Grid.Row="1" Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsRefreshing}">
+            <Grid>
+                <CollectionView IsGrouped="True" ItemsSource="{Binding Groups}" SelectionMode="None">
+                    <CollectionView.GroupHeaderTemplate>
+                        <DataTemplate x:DataType="vm:MomentGroup">
+                            <Label Margin="0,14,0,6" Style="{StaticResource SectionLabel}" Text="{Binding Title}" />
+                        </DataTemplate>
+                    </CollectionView.GroupHeaderTemplate>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:MomentRowVm">
+                            <Grid Padding="0,5">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MomentsViewModel}}, Path=OpenDetailCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Grid.GestureRecognizers>
+                                <Border Padding="12" Style="{StaticResource Card}">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <Border Grid.Column="0" Background="{DynamicResource AccentSoft}" HeightRequest="40" StrokeShape="RoundRectangle 12" StrokeThickness="0" VerticalOptions="Center" WidthRequest="40">
+                                            <controls:AppIcon Color="{DynamicResource Accent}" Icon="{Binding Icon}" Size="20" />
+                                        </Border>
+                                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                            <Label FontFamily="SansBold" FontSize="15" Text="{Binding Title}" TextColor="{DynamicResource Ink}" />
+                                            <Label Style="{StaticResource Caption}" Text="{Binding When}" />
+                                            <HorizontalStackLayout Spacing="5">
+                                                <controls:AppIcon Color="{DynamicResource Brand}" Icon="Heart" IsVisible="{Binding IsComplete}" Size="12" VerticalOptions="Center" />
+                                                <Label FontFamily="SansSemiBold" FontSize="11" Text="{Binding Status}" TextColor="{DynamicResource Brand}" VerticalOptions="Center" />
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+                                        <controls:AppIcon Grid.Column="2" Color="{DynamicResource InkLight}" Icon="ChevronRight" Size="20" VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!--  Empty state  -->
+                <VerticalStackLayout IsVisible="{Binding IsEmpty}" Spacing="12" VerticalOptions="Center">
+                    <Border Background="{DynamicResource AccentSoft}" HeightRequest="88" HorizontalOptions="Center" StrokeShape="RoundRectangle 44" StrokeThickness="0" WidthRequest="88">
+                        <controls:AppIcon Color="{DynamicResource Accent}" Icon="Sparkles" Size="40" />
+                    </Border>
+                    <Label FontFamily="SansBold" FontSize="18" HorizontalOptions="Center" Text="No moments yet" TextColor="{DynamicResource Ink}" />
+                    <Label HorizontalOptions="Center" HorizontalTextAlignment="Center" Style="{StaticResource BodySmall}" Text="Complete today's Moment to start collecting them here." />
+                </VerticalStackLayout>
+            </Grid>
+        </RefreshView>
+
+    </Grid>
+
+</ContentPage>

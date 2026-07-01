@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Pulse.Views.PulseDetailView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Pulse.UI.Controls"
+    xmlns:resources="clr-namespace:Pulse.Resources"
+    xmlns:vm="clr-namespace:Pulse.ViewModels"
+    x:DataType="vm:PulseDetailViewModel"
+    Shell.TabBarIsVisible="False">
+
+    <!--  Native bar: back button + star; Delete in the overflow (own pulses only).  -->
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Command="{Binding ToggleFavoriteCommand}" Order="Primary" Priority="0">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource FontFamily="mdi" Glyph="{Binding FavoriteGlyph}" Color="{DynamicResource Brand}" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+        <ToolbarItem Command="{Binding DeleteCommand}" IsEnabled="{Binding CanDelete}" Order="Secondary" Text="Delete" />
+    </ContentPage.ToolbarItems>
+
+    <!--  Single-cell grid: the ScrollView fills from the very top (matching the Moment detail's root
+          ScrollView exactly, so the hero starts at the same height), and the footer floats bottom-aligned
+          over it. SafeAreaEdges None on the ScrollView lets the hero bleed under the glass bar.  -->
+    <Grid>
+
+        <ScrollView SafeAreaEdges="None">
+            <VerticalStackLayout Padding="20,0,20,40" Spacing="20">
+
+                <!--  Hero (no fill — on the page background, matching the Moment detail). Top padding
+                      keeps the icon clear of the floating glass bar as it scrolls underneath.  -->
+                <VerticalStackLayout Padding="0,88,0,8" HorizontalOptions="Center" Spacing="12">
+                    <Border
+                        Background="{DynamicResource BrandSoft}"
+                        HeightRequest="96"
+                        HorizontalOptions="Center"
+                        StrokeShape="RoundRectangle 26"
+                        StrokeThickness="0"
+                        WidthRequest="96">
+                        <controls:AppIcon Color="{DynamicResource Brand}" Icon="{Binding Icon}" Size="44" />
+                    </Border>
+                    <Label
+                        FontFamily="SansExtraBold"
+                        FontSize="26"
+                        HorizontalOptions="Center"
+                        HorizontalTextAlignment="Center"
+                        Text="{Binding Text}"
+                        TextColor="{DynamicResource Ink}" />
+                    <Border
+                        Padding="12,5"
+                        Background="{DynamicResource BrandSoft}"
+                        HorizontalOptions="Center"
+                        StrokeShape="RoundRectangle 100"
+                        StrokeThickness="0">
+                        <Label FontFamily="SansSemiBold" FontSize="12" Text="{Binding TypeLabel}" TextColor="{DynamicResource Brand}" />
+                    </Border>
+
+                    <!--  Sender avatar + attribution  -->
+                    <HorizontalStackLayout HorizontalOptions="Center" Spacing="8">
+                        <controls:AvatarView AvatarUrl="{Binding SenderAvatarUrl}" DisplayName="{Binding SenderName}" Size="24" VerticalOptions="Center" />
+                        <Label Style="{StaticResource Caption}" Text="{Binding Attribution}" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+
+                <!--  Optional note  -->
+                <Border
+                    Padding="16"
+                    Background="{DynamicResource Surface}"
+                    IsVisible="{Binding HasNote}"
+                    Stroke="{DynamicResource Stroke}"
+                    StrokeShape="RoundRectangle 16"
+                    StrokeThickness="1">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <controls:AppIcon Grid.Column="0" Color="{DynamicResource InkLight}" Icon="Quote" Size="18" VerticalOptions="Start" />
+                        <Label Grid.Column="1" Style="{StaticResource BodyLarge}" Text="{Binding Note}" VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!--  Footer floats at the bottom (only "Send one back" on a partner's signal; own signals have
+              no footer button — favouriting is the nav-bar star).  -->
+        <VerticalStackLayout Padding="20,0,20,40" VerticalOptions="End">
+            <Button
+                Command="{Binding SendOneBackCommand}"
+                IsVisible="{Binding IsFromPartner}"
+                Text="Send one back" />
+        </VerticalStackLayout>
+
+    </Grid>
+
+</ContentPage>

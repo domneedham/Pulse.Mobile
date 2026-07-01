@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Pulse.Views.ConnectView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:resources="clr-namespace:Pulse.Resources"
+    xmlns:vm="clr-namespace:Pulse.ViewModels"
+    x:DataType="vm:ConnectViewModel"
+    Shell.NavBarIsVisible="False"
+    Shell.TabBarIsVisible="False">
+
+    <ScrollView>
+        <Grid Padding="28,48,28,32" RowDefinitions="Auto,Auto,*,Auto">
+
+            <!--  Brand mark: a node-to-node pulse  -->
+            <VerticalStackLayout Grid.Row="0" Spacing="14">
+                <Border
+                    Background="{DynamicResource Navy}"
+                    HeightRequest="72"
+                    HorizontalOptions="Center"
+                    StrokeShape="RoundRectangle 22"
+                    StrokeThickness="0"
+                    WidthRequest="72">
+                    <Label
+                        FontFamily="mdi"
+                        FontSize="38"
+                        HorizontalOptions="Center"
+                        Text="{x:Static resources:MdiIcons.HeartPulse}"
+                        TextColor="{DynamicResource Brand}"
+                        VerticalOptions="Center" />
+                </Border>
+                <Label
+                    FontFamily="SansExtraBold"
+                    FontSize="26"
+                    HorizontalOptions="Center"
+                    Text="Connect your Pulse"
+                    TextColor="{DynamicResource Ink}" />
+                <Label
+                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    Style="{StaticResource BodyMedium}"
+                    Text="Pulse is just for the two of you. Invite your partner and link your Pulses." />
+            </VerticalStackLayout>
+
+            <!--  Pending invite: show the shareable code  -->
+            <VerticalStackLayout
+                Grid.Row="1"
+                Margin="0,28,0,0"
+                IsVisible="{Binding HasInviteCode}"
+                Spacing="12">
+                <Border Padding="20" Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label
+                            HorizontalOptions="Center"
+                            Style="{StaticResource SectionLabel}"
+                            Text="YOUR INVITE CODE" />
+                        <Label
+                            FontFamily="SansExtraBold"
+                            FontSize="40"
+                            HorizontalOptions="Center"
+                            Text="{Binding MyInviteCode}"
+                            TextColor="{DynamicResource Brand}" />
+                        <Label
+                            HorizontalOptions="Center"
+                            HorizontalTextAlignment="Center"
+                            Style="{StaticResource BodySmall}"
+                            Text="Share this with your partner. We'll connect you the moment they enter it." />
+                        <Grid Margin="0,6,0,0" ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <Button
+                                Grid.Column="0"
+                                Command="{Binding CopyCodeCommand}"
+                                Style="{StaticResource SecondaryButton}"
+                                Text="Copy" />
+                            <Button
+                                Grid.Column="1"
+                                Command="{Binding ShareCodeCommand}"
+                                Text="Share" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <!--  Actions  -->
+            <VerticalStackLayout
+                Grid.Row="3"
+                Spacing="16"
+                VerticalOptions="End">
+
+                <!--  Create invite (hidden once a code exists)  -->
+                <Button
+                    Command="{Binding CreateInviteCommand}"
+                    IsVisible="{Binding HasInviteCode, Converter={StaticResource InvertedBoolConverter}}"
+                    Text="Create an invite" />
+
+                <!--  Enter partner's code  -->
+                <VerticalStackLayout Spacing="10">
+                    <Label Style="{StaticResource SectionLabel}" Text="HAVE A CODE FROM YOUR PARTNER?" />
+                    <Border Style="{StaticResource InputField}">
+                        <Entry
+                            Placeholder="Enter invite code"
+                            Text="{Binding EnteredCode}"
+                            VerticalOptions="Center" />
+                    </Border>
+                    <Grid>
+                        <Button
+                            Command="{Binding AcceptInviteCommand}"
+                            IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                            Style="{StaticResource SecondaryButton}"
+                            Text="Connect" />
+                        <ActivityIndicator
+                            HeightRequest="48"
+                            IsRunning="{Binding IsBusy}"
+                            IsVisible="{Binding IsBusy}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
+        </Grid>
+    </ScrollView>
+
+</ContentPage>

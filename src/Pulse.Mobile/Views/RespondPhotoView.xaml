@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:BottomSheetPage
+    x:Class="Pulse.Views.RespondPhotoView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Pulse.UI.Controls"
+    xmlns:resources="clr-namespace:Pulse.Resources"
+    xmlns:vm="clr-namespace:Pulse.ViewModels"
+    Padding="0"
+    x:DataType="vm:RespondPhotoViewModel"
+    SafeAreaEdges="None">
+
+    <controls:BottomSheetPage.PopupContent>
+        <Border
+            Background="{DynamicResource Surface}"
+            Stroke="Transparent"
+            StrokeShape="RoundRectangle 24,24,0,0"
+            VerticalOptions="Fill">
+            <Border.Shadow>
+                <Shadow Brush="{DynamicResource Ink}" Opacity="0.12" Radius="16" Offset="0,-4" />
+            </Border.Shadow>
+
+            <Grid Padding="20,8,20,24" RowDefinitions="Auto,Auto,*,Auto,Auto" RowSpacing="14" SafeAreaEdges="None">
+
+                <BoxView Grid.Row="0" Margin="0,4,0,0" Style="{StaticResource DragHandle}" />
+
+                <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0" Style="{StaticResource PageTitle}" Text="Your photo" VerticalOptions="Center" />
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding CloseCommand}"
+                        StyleId="glass"
+                        Style="{StaticResource IconButtonGhost}"
+                        Text="{x:Static resources:MdiIcons.Close}" />
+                </Grid>
+
+                <!--  Preview / placeholder  -->
+                <Border
+                    Grid.Row="2"
+                    Background="{DynamicResource PageBackground}"
+                    Stroke="{DynamicResource Stroke}"
+                    StrokeShape="RoundRectangle 18"
+                    StrokeThickness="1">
+                    <Grid>
+                        <VerticalStackLayout
+                            HorizontalOptions="Center"
+                            IsVisible="{Binding HasPhoto, Converter={StaticResource InvertedBoolConverter}}"
+                            Spacing="8"
+                            VerticalOptions="Center">
+                            <controls:AppIcon Color="{DynamicResource InkLight}" HorizontalOptions="Center" Icon="Image" Size="44" />
+                            <Label HorizontalOptions="Center" Style="{StaticResource Caption}" Text="No photo yet" />
+                        </VerticalStackLayout>
+                        <Image
+                            Aspect="AspectFill"
+                            IsVisible="{Binding HasPhoto}"
+                            Source="{Binding PreviewPath}" />
+                    </Grid>
+                </Border>
+
+                <!--  Capture / choose  -->
+                <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <Button
+                        Grid.Column="0"
+                        Command="{Binding CaptureCommand}"
+                        Style="{StaticResource SecondaryButton}"
+                        Text="Take photo" />
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding ChooseCommand}"
+                        Style="{StaticResource SecondaryButton}"
+                        Text="Choose photo" />
+                </Grid>
+
+                <Grid Grid.Row="4">
+                    <Button
+                        Command="{Binding SendCommand}"
+                        IsEnabled="{Binding HasPhoto}"
+                        IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                        Text="Save photo" />
+                    <ActivityIndicator HeightRequest="48" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+                </Grid>
+
+            </Grid>
+        </Border>
+    </controls:BottomSheetPage.PopupContent>
+
+</controls:BottomSheetPage>

@@ -5,103 +5,41 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
     <!--
-        LIGHT THEME — Pulse's bright, energetic default.
-        Keys here are mirrored exactly in DarkTheme.xaml so the app can
-        swap between them at runtime via DynamicResource.
+        LIGHT THEME — Pulse's default.
+        Palette from the product brief: deep navy, coral primary, purple accent, warm background.
+        Keys here are mirrored exactly in DarkTheme.xaml so the app can swap at runtime via DynamicResource.
     -->
 
-    <!--  Brand  -->
-    <Color x:Key="Brand">#FF4D0D</Color>
-    <Color x:Key="BrandDark">#E03C00</Color>
-    <Color x:Key="BrandSoft">#FFE9DE</Color>
+    <!--  Brand: coral is the primary action colour; purple is the secondary accent (PulseTouch).  -->
+    <Color x:Key="Brand">#FF7A7A</Color>
+    <Color x:Key="BrandDark">#F25F5F</Color>
+    <Color x:Key="BrandSoft">#FFE4E4</Color>
     <Color x:Key="OnBrand">#FFFFFF</Color>
 
+    <Color x:Key="Accent">#A98BFF</Color>
+    <Color x:Key="AccentSoft">#ECE5FF</Color>
+
+    <!--  Navy — branding, dark surfaces, the connection nodes.  -->
+    <Color x:Key="Navy">#07153D</Color>
+    <Color x:Key="NavyAlt">#0B1F5A</Color>
+
     <!--  Surfaces  -->
-    <Color x:Key="PageBackground">#F5F4F2</Color>
+    <Color x:Key="PageBackground">#FAF8F5</Color>
     <Color x:Key="Surface">#FFFFFF</Color>
-    <Color x:Key="SurfaceAlt">#EFEDEA</Color>
-    <Color x:Key="Stroke">#DAD6CF</Color>
+    <Color x:Key="SurfaceAlt">#F1EEE9</Color>
+    <Color x:Key="Stroke">#E5E0D8</Color>
 
     <!--  Text  -->
-    <Color x:Key="Ink">#141311</Color>
-    <Color x:Key="InkMid">#6B6862</Color>
-    <Color x:Key="InkLight">#A6A29B</Color>
+    <Color x:Key="Ink">#07153D</Color>
+    <Color x:Key="InkMid">#5B6478</Color>
+    <Color x:Key="InkLight">#9AA1B0</Color>
 
-    <!--  Contrast block (centre tab-bar button, dark chips)  -->
-    <Color x:Key="Contrast">#141311</Color>
+    <!--  Contrast block (navy chips / dark buttons)  -->
+    <Color x:Key="Contrast">#07153D</Color>
     <Color x:Key="OnContrast">#FFFFFF</Color>
 
-    <!--
-        Challenge theme tints — one background + foreground pair per challenge
-        theme, used on challenge cards, detail headers and the theme picker.
-        Applied by the ui:Tint attached property via DynamicResource.
-    -->
-    <Color x:Key="ThemeEmberBg">#FF5318</Color>
-    <Color x:Key="ThemeEmberFg">#C2330A</Color>
-    <Color x:Key="ThemeLibraryBg">#CFE5BA</Color>
-    <Color x:Key="ThemeLibraryFg">#3E6B22</Color>
-    <Color x:Key="ThemeSummitBg">#B9CBF2</Color>
-    <Color x:Key="ThemeSummitFg">#32549E</Color>
-    <Color x:Key="ThemeHorizonBg">#C3E3EE</Color>
-    <Color x:Key="ThemeHorizonFg">#2F7E96</Color>
-    <Color x:Key="ThemeHavenBg">#F8E8AE</Color>
-    <Color x:Key="ThemeHavenFg">#9C7A1E</Color>
-    <Color x:Key="ThemeCustomBg">#ECEAE6</Color>
-    <Color x:Key="ThemeCustomFg">#504D48</Color>
-
-    <!--
-        Appearance palettes — the colour swatches on the create flow's "Appearance" step.
-        Each is a soft badge wash (Bg) + a saturated swatch/glyph colour (Fg), painted by
-        ui:Tint just like the theme tints above. Stored on the challenge as the key string.
-    -->
-    <Color x:Key="AppearanceGreenBg">#DCEFD2</Color>
-    <Color x:Key="AppearanceGreenFg">#3E8E3F</Color>
-    <Color x:Key="AppearanceBlueBg">#D6E6FA</Color>
-    <Color x:Key="AppearanceBlueFg">#2F6FD0</Color>
-    <Color x:Key="AppearancePurpleBg">#E7E0FA</Color>
-    <Color x:Key="AppearancePurpleFg">#6E50C0</Color>
-    <Color x:Key="AppearanceOrangeBg">#FFE3D0</Color>
-    <Color x:Key="AppearanceOrangeFg">#E0701D</Color>
-    <Color x:Key="AppearanceRedBg">#FBDAD7</Color>
-    <Color x:Key="AppearanceRedFg">#D03A30</Color>
-    <Color x:Key="AppearancePinkBg">#FBDCEC</Color>
-    <Color x:Key="AppearancePinkFg">#C83C86</Color>
-    <Color x:Key="AppearanceTealBg">#CFEDE8</Color>
-    <Color x:Key="AppearanceTealFg">#1F8E80</Color>
-    <Color x:Key="AppearanceAmberBg">#FBEAC2</Color>
-    <Color x:Key="AppearanceAmberFg">#C28A12</Color>
-
-    <!--
-        Activity category tints — soft pastel icon-badge backgrounds + a matching
-        glyph colour, assigned per activity so list rows read like the mockups
-        (a green book, an orange run, a blue swim…) rather than one uniform badge.
-        Bg = pale wash, Fg = saturated glyph.
-    -->
-    <Color x:Key="ActMoveBg">#FFE3D6</Color>
-    <Color x:Key="ActMoveFg">#E0561D</Color>
-    <Color x:Key="ActMindBg">#E7E0FA</Color>
-    <Color x:Key="ActMindFg">#6E50C0</Color>
-    <Color x:Key="ActReadBg">#DCEFD2</Color>
-    <Color x:Key="ActReadFg">#4E8A37</Color>
-    <Color x:Key="ActWaterBg">#D6ECF5</Color>
-    <Color x:Key="ActWaterFg">#2F86A8</Color>
-    <Color x:Key="ActRestBg">#FBE9C7</Color>
-    <Color x:Key="ActRestFg">#B8881C</Color>
-    <Color x:Key="ActGenericBg">#E7E3FB</Color>
-    <Color x:Key="ActGenericFg">#6A5CC0</Color>
-
-    <!--  Feed event tints (card wash + icon accent), keyed by event kind  -->
-    <Color x:Key="EventPositionBg">#FFE9DE</Color>
-    <Color x:Key="EventPositionFg">#FF4D0D</Color>
-    <Color x:Key="EventMilestoneBg">#E6F2DD</Color>
-    <Color x:Key="EventMilestoneFg">#5B9C3E</Color>
-    <Color x:Key="EventActivityBg">#ECE7F8</Color>
-    <Color x:Key="EventActivityFg">#7A5CC4</Color>
-    <Color x:Key="EventSocialBg">#E4EFF8</Color>
-    <Color x:Key="EventSocialFg">#3E7CB8</Color>
-
     <!--  Status  -->
-    <Color x:Key="Success">#4C9C56</Color>
+    <Color x:Key="Success">#7FAE8A</Color>
     <Color x:Key="Danger">#D03A30</Color>
     <Color x:Key="DangerLight">#FBEAE8</Color>
 

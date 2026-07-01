@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Pulse.Views.ManageFavoritesView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:models="clr-namespace:Pulse.Models"
+    xmlns:resources="clr-namespace:Pulse.Resources"
+    xmlns:vm="clr-namespace:Pulse.ViewModels"
+    x:DataType="vm:ManageFavoritesViewModel"
+    Title="{Binding Title}"
+    Shell.TabBarIsVisible="False">
+
+    <Grid Padding="20,16,20,20" RowDefinitions="*,Auto">
+
+        <CollectionView Grid.Row="0" ItemsSource="{Binding Items}" SelectionMode="None">
+            <CollectionView.EmptyView>
+                <Label
+                    Margin="0,40,0,0"
+                    HorizontalTextAlignment="Center"
+                    Style="{StaticResource BodyMedium}"
+                    Text="No favourites yet. Add a few below." />
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Favorite">
+                    <Grid Padding="0,10" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <Label Grid.Column="0" FontSize="22" Text="{Binding Emoji}" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Style="{StaticResource BodyMedium}" Text="{Binding Text}" VerticalOptions="Center" />
+                        <Button
+                            Grid.Column="2"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManageFavoritesViewModel}}, Path=RemoveCommand}"
+                            CommandParameter="{Binding .}"
+                            Style="{StaticResource IconButtonGhost}"
+                            Text="{x:Static resources:MdiIcons.MinusCircleOutline}"
+                            TextColor="{DynamicResource Danger}" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!--  Add custom  -->
+        <Border Grid.Row="1" Margin="0,8,0,0" Style="{StaticResource InputField}">
+            <Grid ColumnDefinitions="*,Auto">
+                <Entry
+                    Grid.Column="0"
+                    Placeholder="Add a phrase…"
+                    ReturnCommand="{Binding AddCustomCommand}"
+                    ReturnType="Done"
+                    Text="{Binding NewText}" />
+                <Button
+                    Grid.Column="1"
+                    Padding="14,0"
+                    Command="{Binding AddCustomCommand}"
+                    HeightRequest="40"
+                    Text="Add"
+                    VerticalOptions="Center" />
+            </Grid>
+        </Border>
+
+    </Grid>
+
+</ContentPage>

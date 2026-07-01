@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:BottomSheetPage
+    x:Class="Pulse.Views.RespondDrawingView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Pulse.UI.Controls"
+    xmlns:resources="clr-namespace:Pulse.Resources"
+    xmlns:skia="clr-namespace:SkiaSharp.Views.Maui.Controls;assembly=SkiaSharp.Views.Maui.Controls"
+    xmlns:vm="clr-namespace:Pulse.ViewModels"
+    Padding="0"
+    x:DataType="vm:RespondDrawingViewModel"
+    SafeAreaEdges="None">
+
+    <controls:BottomSheetPage.PopupContent>
+        <Border
+            Background="{DynamicResource Surface}"
+            Stroke="Transparent"
+            StrokeShape="RoundRectangle 24,24,0,0"
+            VerticalOptions="Fill">
+            <Border.Shadow>
+                <Shadow Brush="{DynamicResource Ink}" Opacity="0.12" Radius="16" Offset="0,-4" />
+            </Border.Shadow>
+
+            <Grid Padding="16,8,16,24" RowDefinitions="Auto,Auto,*,Auto,Auto" RowSpacing="12" SafeAreaEdges="None">
+
+                <BoxView Grid.Row="0" Margin="0,4,0,0" Style="{StaticResource DragHandle}" />
+
+                <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                    <Label Grid.Column="0" Style="{StaticResource PageTitle}" Text="Your drawing" VerticalOptions="Center" />
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding ClearCommand}"
+                        Style="{StaticResource GhostButton}"
+                        Text="Clear"
+                        TextColor="{DynamicResource Brand}" />
+                    <Button
+                        Grid.Column="2"
+                        Command="{Binding CloseCommand}"
+                        StyleId="glass"
+                        Style="{StaticResource IconButtonGhost}"
+                        Text="{x:Static resources:MdiIcons.Close}" />
+                </Grid>
+
+                <Border
+                    Grid.Row="2"
+                    Background="{DynamicResource PageBackground}"
+                    Stroke="{DynamicResource Stroke}"
+                    StrokeShape="RoundRectangle 18"
+                    StrokeThickness="1">
+                    <skia:SKCanvasView x:Name="Canvas" EnableTouchEvents="True" />
+                </Border>
+
+                <CollectionView
+                    Grid.Row="3"
+                    HeightRequest="48"
+                    ItemsSource="{Binding Colors}"
+                    SelectionMode="None">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout ItemSpacing="12" Orientation="Horizontal" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:TouchColor">
+                            <Border
+                                Padding="0"
+                                Background="{Binding Hex}"
+                                HeightRequest="36"
+                                StrokeShape="RoundRectangle 18"
+                                StrokeThickness="0"
+                                WidthRequest="36">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RespondDrawingViewModel}}, Path=SelectColorCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <Border
+                                    HeightRequest="44"
+                                    IsVisible="{Binding IsSelected}"
+                                    Stroke="{DynamicResource Ink}"
+                                    StrokeShape="RoundRectangle 22"
+                                    StrokeThickness="2"
+                                    WidthRequest="44" />
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Grid Grid.Row="4">
+                    <Button
+                        x:Name="SendButton"
+                        Clicked="OnSendClicked"
+                        IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                        Text="Save drawing" />
+                    <ActivityIndicator HeightRequest="48" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+                </Grid>
+
+            </Grid>
+        </Border>
+    </controls:BottomSheetPage.PopupContent>
+
+</controls:BottomSheetPage>

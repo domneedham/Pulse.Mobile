@@ -3,19 +3,17 @@
     x:Class="Pulse.Views.HelpSupportView"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Pulse.UI.Controls"
     xmlns:resources="clr-namespace:Pulse.Resources"
     xmlns:ui="clr-namespace:Pulse.UI.Controls"
-    xmlns:views="clr-namespace:Pulse.Views"
     xmlns:vm="clr-namespace:Pulse.ViewModels"
     x:DataType="vm:HelpSupportViewModel"
-    Shell.NavBarIsVisible="False"
+    Title="Help &amp; support"
     Shell.TabBarIsVisible="False">
 
-    <Grid Padding="16,8,16,0" RowDefinitions="Auto,*">
+    <Grid Padding="16,8,16,0">
 
-        <views:SubPageHeader Title="Help &amp; support" Grid.Row="0" />
-
-        <ScrollView Grid.Row="1">
+        <ScrollView>
             <VerticalStackLayout Padding="0,8,0,40" Spacing="16">
 
                 <Border Style="{StaticResource Card}">
@@ -33,25 +31,13 @@
                                 Grid.Column="0"
                                 ui:Tint.Background="ActMove"
                                 Style="{StaticResource IconBadge}">
-                                <Label
-                                    ui:Tint.Foreground="ActMove"
-                                    FontFamily="mdi"
-                                    FontSize="20"
-                                    HorizontalOptions="Center"
-                                    Text="{x:Static resources:MdiIcons.BugOutline}"
-                                    VerticalOptions="Center" />
+                                <controls:AppIcon HorizontalOptions="Center" Icon="Bug" Size="20" VerticalOptions="Center" />
                             </Border>
                             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
                                 <Label Style="{StaticResource CardTitle}" Text="Report a problem" />
                                 <Label Style="{StaticResource BodySmall}" Text="Sends app logs so we can help" />
                             </VerticalStackLayout>
-                            <Label
-                                Grid.Column="2"
-                                FontFamily="mdi"
-                                FontSize="20"
-                                Text="{x:Static resources:MdiIcons.ChevronRight}"
-                                TextColor="{DynamicResource InkLight}"
-                                VerticalOptions="Center" />
+                            <controls:AppIcon Grid.Column="2" Color="{DynamicResource InkLight}" Icon="ChevronRight" Size="20" VerticalOptions="Center" />
                         </Grid>
 
                         <BoxView Style="{StaticResource RowDivider}" />
@@ -68,25 +54,13 @@
                                 Grid.Column="0"
                                 ui:Tint.Background="ActMind"
                                 Style="{StaticResource IconBadge}">
-                                <Label
-                                    ui:Tint.Foreground="ActMind"
-                                    FontFamily="mdi"
-                                    FontSize="20"
-                                    HorizontalOptions="Center"
-                                    Text="{x:Static resources:MdiIcons.LightbulbOnOutline}"
-                                    VerticalOptions="Center" />
+                                <controls:AppIcon HorizontalOptions="Center" Icon="Lightbulb" Size="20" VerticalOptions="Center" />
                             </Border>
                             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
                                 <Label Style="{StaticResource CardTitle}" Text="Request a feature" />
                                 <Label Style="{StaticResource BodySmall}" Text="Tell us what you'd like to see" />
                             </VerticalStackLayout>
-                            <Label
-                                Grid.Column="2"
-                                FontFamily="mdi"
-                                FontSize="20"
-                                Text="{x:Static resources:MdiIcons.ChevronRight}"
-                                TextColor="{DynamicResource InkLight}"
-                                VerticalOptions="Center" />
+                            <controls:AppIcon Grid.Column="2" Color="{DynamicResource InkLight}" Icon="ChevronRight" Size="20" VerticalOptions="Center" />
                         </Grid>
 
                     </VerticalStackLayout>

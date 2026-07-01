@@ -13,10 +13,12 @@
     <!--  In-theme replacement for the native input alert: a bottom sheet with a drag handle,
           title + message, a styled entry, and Cancel / Confirm actions.  -->
     <controls:BottomSheetPage.PopupContent>
+        <!--  A compact input prompt: pin to the bottom (content-sized) rather than filling the sheet.  -->
         <Border
             Background="{DynamicResource Surface}"
             Stroke="Transparent"
-            StrokeShape="RoundRectangle 24,24,0,0">
+            StrokeShape="RoundRectangle 24,24,0,0"
+            VerticalOptions="End">
             <Border.Shadow>
                 <Shadow
                     Brush="{DynamicResource Ink}"

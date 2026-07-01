@@ -3,17 +3,16 @@
     x:Class="Pulse.Views.AppSettingsView"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:views="clr-namespace:Pulse.Views"
+    xmlns:controls="clr-namespace:Pulse.UI.Controls"
+    xmlns:resources="clr-namespace:Pulse.Resources"
     xmlns:vm="clr-namespace:Pulse.ViewModels"
     x:DataType="vm:AppSettingsViewModel"
-    Shell.NavBarIsVisible="False"
+    Title="App settings"
     Shell.TabBarIsVisible="False">
 
-    <Grid Padding="16,8,16,0" RowDefinitions="Auto,*">
+    <Grid Padding="16,8,16,0">
 
-        <views:SubPageHeader Title="App settings" Grid.Row="0" />
-
-        <ScrollView Grid.Row="1">
+        <ScrollView>
             <VerticalStackLayout Padding="0,8,0,40" Spacing="12">
 
                 <!--  Appearance  -->
@@ -47,6 +46,63 @@
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
                 </HorizontalStackLayout>
+
+                <!--  Favourites  -->
+                <Label Margin="0,8,0,0" Style="{StaticResource SectionLabel}" Text="Favourites" />
+                <Border Padding="4" Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="0">
+                        <Grid Padding="14,14" ColumnDefinitions="*,Auto">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ManageFavoritesCommand}" CommandParameter="Mood" />
+                            </Grid.GestureRecognizers>
+                            <Label Grid.Column="0" Style="{StaticResource BodyMedium}" Text="Favourite moods" VerticalOptions="Center" />
+                            <controls:AppIcon Grid.Column="1" Color="{DynamicResource InkLight}" Icon="ChevronRight" Size="20" />
+                        </Grid>
+                        <BoxView Style="{StaticResource RowDivider}" />
+                        <Grid Padding="14,14" ColumnDefinitions="*,Auto">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ManageFavoritesCommand}" CommandParameter="Need" />
+                            </Grid.GestureRecognizers>
+                            <Label Grid.Column="0" Style="{StaticResource BodyMedium}" Text="Favourite needs" VerticalOptions="Center" />
+                            <controls:AppIcon Grid.Column="1" Color="{DynamicResource InkLight}" Icon="ChevronRight" Size="20" />
+                        </Grid>
+                        <BoxView Style="{StaticResource RowDivider}" />
+                        <Grid Padding="14,14" ColumnDefinitions="*,Auto">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ManageFavoritesCommand}" CommandParameter="Thought" />
+                            </Grid.GestureRecognizers>
+                            <Label Grid.Column="0" Style="{StaticResource BodyMedium}" Text="Favourite thoughts" VerticalOptions="Center" />
+                            <controls:AppIcon Grid.Column="1" Color="{DynamicResource InkLight}" Icon="ChevronRight" Size="20" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!--  Moments  -->
+                <Label Margin="0,8,0,0" Style="{StaticResource SectionLabel}" Text="Moments" />
+                <Border Padding="4" Style="{StaticResource Card}">
+                    <Grid Padding="14,14" ColumnDefinitions="*,Auto">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ManagePacksCommand}" />
+                        </Grid.GestureRecognizers>
+                        <Label Grid.Column="0" Style="{StaticResource BodyMedium}" Text="Moment packs" VerticalOptions="Center" />
+                        <controls:AppIcon Grid.Column="1" Color="{DynamicResource InkLight}" Icon="ChevronRight" Size="20" />
+                    </Grid>
+                </Border>
+
+                <!--  Pro (debug only)  -->
+                <Border Margin="0,8,0,0" IsVisible="{Binding ShowDebugPro}" Style="{StaticResource Card}">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                            <Label Style="{StaticResource CardTitle}" Text="Pulse Pro (debug)" />
+                            <Label Style="{StaticResource BodySmall}" Text="Toggle Pro to test pack unlocking" />
+                        </VerticalStackLayout>
+                        <Switch
+                            Grid.Column="1"
+                            IsToggled="{Binding IsPro}"
+                            OnColor="{DynamicResource Brand}"
+                            VerticalOptions="Center" />
+                    </Grid>
+                </Border>
 
                 <!--  Haptics  -->
                 <Border Margin="0,8,0,0" Style="{StaticResource Card}">

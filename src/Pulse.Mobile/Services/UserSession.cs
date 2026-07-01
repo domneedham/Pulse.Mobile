@@ -17,6 +17,7 @@ public class UserSession(IPulseApiClient api)
 
     public string DisplayName => Current?.DisplayName ?? string.Empty;
     public string? AvatarUrl => Current?.AvatarUrl;
+    public bool IsPro => Current?.IsPro ?? false;
 
     /// <summary>Fetch the current user into the cache. Safe to call on every auth entry point.</summary>
     public async Task LoadAsync(CancellationToken ct = default)

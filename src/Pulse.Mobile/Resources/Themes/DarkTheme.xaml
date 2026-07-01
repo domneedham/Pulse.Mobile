@@ -6,89 +6,39 @@
 
     <!--
         DARK THEME — mirrors every key in LightTheme.xaml.
-        Surfaces go near-black, tints keep their hue but drop luminance so
-        Ink (now light) stays readable on top of them.
+        Surfaces go deep navy-black; Ink flips light so it stays readable.
     -->
 
     <!--  Brand  -->
-    <Color x:Key="Brand">#FF5A1F</Color>
-    <Color x:Key="BrandDark">#FF7240</Color>
-    <Color x:Key="BrandSoft">#3A2014</Color>
-    <Color x:Key="OnBrand">#FFFFFF</Color>
+    <Color x:Key="Brand">#FF8C8C</Color>
+    <Color x:Key="BrandDark">#FF7A7A</Color>
+    <Color x:Key="BrandSoft">#3A1E1E</Color>
+    <Color x:Key="OnBrand">#1A0B0B</Color>
+
+    <Color x:Key="Accent">#B7A2F0</Color>
+    <Color x:Key="AccentSoft">#241F3A</Color>
+
+    <!--  Navy  -->
+    <Color x:Key="Navy">#0A1A45</Color>
+    <Color x:Key="NavyAlt">#0E2566</Color>
 
     <!--  Surfaces  -->
-    <Color x:Key="PageBackground">#131210</Color>
-    <Color x:Key="Surface">#1F1D1A</Color>
-    <Color x:Key="SurfaceAlt">#2A2724</Color>
-    <Color x:Key="Stroke">#363330</Color>
+    <Color x:Key="PageBackground">#070C1A</Color>
+    <Color x:Key="Surface">#101830</Color>
+    <Color x:Key="SurfaceAlt">#18223E</Color>
+    <Color x:Key="Stroke">#27314F</Color>
 
     <!--  Text  -->
-    <Color x:Key="Ink">#F4F2EF</Color>
-    <Color x:Key="InkMid">#B5B1AA</Color>
-    <Color x:Key="InkLight">#7C7872</Color>
+    <Color x:Key="Ink">#EEF1F8</Color>
+    <Color x:Key="InkMid">#A6AEC2</Color>
+    <Color x:Key="InkLight">#6B7591</Color>
 
-    <!--  Contrast block (centre tab-bar button, dark chips)  -->
-    <Color x:Key="Contrast">#F4F2EF</Color>
-    <Color x:Key="OnContrast">#141311</Color>
-
-    <!--  Challenge theme tints  -->
-    <Color x:Key="ThemeEmberBg">#E84A12</Color>
-    <Color x:Key="ThemeEmberFg">#FFB59A</Color>
-    <Color x:Key="ThemeLibraryBg">#3A5226</Color>
-    <Color x:Key="ThemeLibraryFg">#BCDC9E</Color>
-    <Color x:Key="ThemeSummitBg">#2E4170</Color>
-    <Color x:Key="ThemeSummitFg">#AFC4F2</Color>
-    <Color x:Key="ThemeHorizonBg">#1F4B5A</Color>
-    <Color x:Key="ThemeHorizonFg">#A8DCEC</Color>
-    <Color x:Key="ThemeHavenBg">#5A4A14</Color>
-    <Color x:Key="ThemeHavenFg">#F3DF96</Color>
-    <Color x:Key="ThemeCustomBg">#34322E</Color>
-    <Color x:Key="ThemeCustomFg">#C9C5BE</Color>
-
-    <!--  Appearance palettes (dark): muted wash + lighter swatch/glyph  -->
-    <Color x:Key="AppearanceGreenBg">#23311B</Color>
-    <Color x:Key="AppearanceGreenFg">#7FC76A</Color>
-    <Color x:Key="AppearanceBlueBg">#1D2D44</Color>
-    <Color x:Key="AppearanceBlueFg">#7AA8E8</Color>
-    <Color x:Key="AppearancePurpleBg">#2B2440</Color>
-    <Color x:Key="AppearancePurpleFg">#B7A2F0</Color>
-    <Color x:Key="AppearanceOrangeBg">#3A2414</Color>
-    <Color x:Key="AppearanceOrangeFg">#F0995A</Color>
-    <Color x:Key="AppearanceRedBg">#3A201E</Color>
-    <Color x:Key="AppearanceRedFg">#E8726A</Color>
-    <Color x:Key="AppearancePinkBg">#3A1E2E</Color>
-    <Color x:Key="AppearancePinkFg">#E87AB6</Color>
-    <Color x:Key="AppearanceTealBg">#163330</Color>
-    <Color x:Key="AppearanceTealFg">#5CC7B8</Color>
-    <Color x:Key="AppearanceAmberBg">#3A2E12</Color>
-    <Color x:Key="AppearanceAmberFg">#E7C76A</Color>
-
-    <!--  Activity category tints (dark): muted wash + lighter glyph  -->
-    <Color x:Key="ActMoveBg">#3A2014</Color>
-    <Color x:Key="ActMoveFg">#FFA877</Color>
-    <Color x:Key="ActMindBg">#2B2440</Color>
-    <Color x:Key="ActMindFg">#B7A2F0</Color>
-    <Color x:Key="ActReadBg">#23311B</Color>
-    <Color x:Key="ActReadFg">#9FCE7E</Color>
-    <Color x:Key="ActWaterBg">#1D2D3C</Color>
-    <Color x:Key="ActWaterFg">#85C2DC</Color>
-    <Color x:Key="ActRestBg">#3A2E12</Color>
-    <Color x:Key="ActRestFg">#E7C76A</Color>
-    <Color x:Key="ActGenericBg">#2B2440</Color>
-    <Color x:Key="ActGenericFg">#A88FE8</Color>
-
-    <!--  Feed event tints  -->
-    <Color x:Key="EventPositionBg">#3A2014</Color>
-    <Color x:Key="EventPositionFg">#FF7240</Color>
-    <Color x:Key="EventMilestoneBg">#23311B</Color>
-    <Color x:Key="EventMilestoneFg">#8DC46C</Color>
-    <Color x:Key="EventActivityBg">#2B2440</Color>
-    <Color x:Key="EventActivityFg">#A88FE8</Color>
-    <Color x:Key="EventSocialBg">#1D2D3C</Color>
-    <Color x:Key="EventSocialFg">#76AEDC</Color>
+    <!--  Contrast block  -->
+    <Color x:Key="Contrast">#EEF1F8</Color>
+    <Color x:Key="OnContrast">#07153D</Color>
 
     <!--  Status  -->
-    <Color x:Key="Success">#6CBE76</Color>
+    <Color x:Key="Success">#7FAE8A</Color>
     <Color x:Key="Danger">#E06058</Color>
     <Color x:Key="DangerLight">#3A201E</Color>
 

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Pulse.Views.MomentDetailView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Pulse.UI.Controls"
+    xmlns:resources="clr-namespace:Pulse.Resources"
+    xmlns:vm="clr-namespace:Pulse.ViewModels"
+    x:DataType="vm:MomentDetailViewModel"
+    Shell.TabBarIsVisible="False">
+
+    <!--  Native nav bar provides the back button; the star is a toolbar action.  -->
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Command="{Binding ToggleFavoriteCommand}" Order="Primary" Priority="0">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource FontFamily="mdi" Glyph="{Binding FavoriteGlyph}" Color="{DynamicResource Accent}" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+    </ContentPage.ToolbarItems>
+
+    <!--  SafeAreaEdges None lets the hero bleed up under the transparent (glass) nav bar; the inner
+          paddings below restore breathing room for the content itself.  -->
+    <ScrollView SafeAreaEdges="None">
+        <VerticalStackLayout Padding="20,0,20,28" Spacing="16">
+
+            <!--  Hero (no fill — sits on the page background like the mock). Top padding keeps the star
+                  clear of the floating glass bar + status area as it scrolls underneath.  -->
+            <VerticalStackLayout Padding="0,88,0,8" HorizontalOptions="Center" Spacing="12">
+                <Border
+                    Background="{DynamicResource AccentSoft}"
+                    HeightRequest="72"
+                    HorizontalOptions="Center"
+                    StrokeShape="RoundRectangle 22"
+                    StrokeThickness="0"
+                    WidthRequest="72">
+                    <controls:AppIcon Color="{DynamicResource Accent}" Icon="{Binding Icon}" Size="34" />
+                </Border>
+                <Label HorizontalOptions="Center" Style="{StaticResource Caption}" Text="{Binding DateLabel}" />
+                <Label FontFamily="SansExtraBold" FontSize="26" HorizontalOptions="Center" HorizontalTextAlignment="Center" Text="{Binding Title}" TextColor="{DynamicResource Ink}" />
+                <Border
+                    Padding="12,5"
+                    Background="{DynamicResource AccentSoft}"
+                    HorizontalOptions="Center"
+                    StrokeShape="RoundRectangle 100"
+                    StrokeThickness="0">
+                    <Label FontFamily="SansSemiBold" FontSize="12" Text="{Binding CategoryLabel}" TextColor="{DynamicResource Accent}" />
+                </Border>
+                <Label
+                    Margin="0,2,0,0"
+                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    Style="{StaticResource BodyMedium}"
+                    Text="{Binding Prompt}" />
+            </VerticalStackLayout>
+
+            <!--  Action (not yet answered)  -->
+            <Button
+                Command="{Binding RespondCommand}"
+                IsVisible="{Binding ShowAction}"
+                Text="{Binding ActionLabel}" />
+
+            <!--  Status (answered, awaiting reveal)  -->
+            <Border
+                Padding="16"
+                Background="{DynamicResource BrandSoft}"
+                IsVisible="{Binding ShowStatus}"
+                Stroke="Transparent"
+                StrokeShape="RoundRectangle 16"
+                StrokeThickness="0">
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="8">
+                    <controls:AppIcon Color="{DynamicResource Brand}" Icon="Clock" Size="18" VerticalOptions="Center" />
+                    <Label HorizontalTextAlignment="Center" Style="{StaticResource BodySmall}" Text="{Binding StatusText}" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Border>
+
+            <!--  Revealed responses  -->
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Responses}" IsVisible="{Binding ShowResponses}" Spacing="14">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:MomentResponseVm">
+                        <Border
+                            Padding="16"
+                            Background="{Binding PersonTint}"
+                            Stroke="Transparent"
+                            StrokeShape="RoundRectangle 16"
+                            StrokeThickness="0">
+                            <VerticalStackLayout Spacing="10">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                    <controls:AvatarView Grid.Column="0" AvatarUrl="{Binding AvatarUrl}" DisplayName="{Binding Author}" Size="28" VerticalOptions="Center" />
+                                    <Label Grid.Column="1" FontFamily="SansBold" FontSize="15" Text="{Binding Author}" TextColor="{DynamicResource Ink}" VerticalOptions="Center" />
+                                    <Label Grid.Column="2" Style="{StaticResource Caption}" Text="{Binding When}" VerticalOptions="Center" />
+                                </Grid>
+
+                                <!--  Text  -->
+                                <Label IsVisible="{Binding IsText}" Style="{StaticResource BodyLarge}" Text="{Binding Text}" />
+
+                                <!--  Photo  -->
+                                <Border
+                                    HeightRequest="220"
+                                    IsVisible="{Binding HasPhoto}"
+                                    Stroke="Transparent"
+                                    StrokeShape="RoundRectangle 14"
+                                    StrokeThickness="0">
+                                    <Image Aspect="AspectFill" Source="{Binding PhotoUrl}" />
+                                </Border>
+
+                                <!--  Drawing playback  -->
+                                <Border
+                                    HeightRequest="240"
+                                    IsVisible="{Binding IsDrawing}"
+                                    Background="{DynamicResource PageBackground}"
+                                    Stroke="{DynamicResource Stroke}"
+                                    StrokeShape="RoundRectangle 14"
+                                    StrokeThickness="1">
+                                    <controls:StrokeView StrokeData="{Binding StrokeData}" />
+                                </Border>
+
+                                <!--  Choice pick  -->
+                                <Border
+                                    Padding="14,10"
+                                    Background="{DynamicResource BrandSoft}"
+                                    HorizontalOptions="Start"
+                                    IsVisible="{Binding IsChoice}"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="0">
+                                    <Label FontFamily="SansSemiBold" FontSize="15" Text="{Binding ChoiceLabel}" TextColor="{DynamicResource Ink}" />
+                                </Border>
+
+                                <!--  Voice note: play button + label  -->
+                                <Border
+                                    Padding="12"
+                                    Background="{DynamicResource BrandSoft}"
+                                    IsVisible="{Binding HasVoice}"
+                                    StrokeShape="RoundRectangle 14"
+                                    StrokeThickness="0">
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                        <Border Grid.Column="0" Background="{DynamicResource Brand}" HeightRequest="40" StrokeShape="RoundRectangle 20" StrokeThickness="0" WidthRequest="40">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="OnPlayVoiceTapped" CommandParameter="{Binding VoiceUrl}" />
+                                            </Border.GestureRecognizers>
+                                            <controls:AppIcon Color="White" HorizontalOptions="Center" Icon="Play" Size="20" VerticalOptions="Center" />
+                                        </Border>
+                                        <Label Grid.Column="1" Style="{StaticResource BodyMedium}" Text="Voice note" VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

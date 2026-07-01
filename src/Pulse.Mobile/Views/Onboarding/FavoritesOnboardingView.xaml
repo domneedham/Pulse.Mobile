@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Pulse.Views.Onboarding.FavoritesOnboardingView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:Pulse.ViewModels"
+    x:DataType="vm:FavoritesOnboardingViewModel"
+    Shell.NavBarIsVisible="False"
+    Shell.TabBarIsVisible="False">
+
+    <Grid Padding="24,24,24,28" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="14">
+
+        <!--  Skip  -->
+        <Button
+            Grid.Row="0"
+            Command="{Binding SkipCommand}"
+            HorizontalOptions="End"
+            Style="{StaticResource GhostButton}"
+            Text="Skip"
+            TextColor="{DynamicResource InkMid}" />
+
+        <!--  Title + subtitle  -->
+        <VerticalStackLayout Grid.Row="1" Spacing="6">
+            <Label FontFamily="SansExtraBold" FontSize="24" Text="{Binding Title}" TextColor="{DynamicResource Ink}" />
+            <Label Style="{StaticResource BodyMedium}" Text="{Binding Subtitle}" />
+        </VerticalStackLayout>
+
+        <!--  Selectable options  -->
+        <ScrollView Grid.Row="2">
+            <FlexLayout BindableLayout.ItemsSource="{Binding Options}" Wrap="Wrap">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:SelectableOption">
+                        <Border
+                            Margin="0,0,8,8"
+                            Padding="14,10"
+                            Background="{Binding IsSelected, Converter={StaticResource ChipFill}}"
+                            Stroke="{DynamicResource Stroke}"
+                            StrokeShape="RoundRectangle 100"
+                            StrokeThickness="1">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FavoritesOnboardingViewModel}}, Path=ToggleCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                            <HorizontalStackLayout Spacing="8">
+                                <Label FontSize="18" Text="{Binding Emoji}" VerticalOptions="Center" />
+                                <Label FontFamily="SansMedium" FontSize="15" Text="{Binding Text}" TextColor="{DynamicResource Ink}" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </FlexLayout>
+        </ScrollView>
+
+        <!--  Continue / All set  -->
+        <Grid Grid.Row="3">
+            <Button
+                Command="{Binding ContinueCommand}"
+                IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                Text="{Binding ContinueLabel}" />
+            <ActivityIndicator HeightRequest="48" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+        </Grid>
+
+    </Grid>
+
+</ContentPage>

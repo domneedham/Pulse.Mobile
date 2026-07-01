@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Nalu;
 using Pulse.Services;
+using Pulse.Services.Api;
 
 namespace Pulse.ViewModels;
 
@@ -22,7 +23,10 @@ public partial class ThemeOption(AppThemePreference preference, string label) : 
 public partial class AppSettingsViewModel(
     IThemeService themeService,
     HapticService hapticService,
-    INavigationService navigationService) : ObservableObject, IAppearingAware
+    INavigationService navigationService,
+    UserSession userSession,
+    IPulseApiClient api,
+    IAlertService alerts) : ObservableObject, IAppearingAware
 {
     public List<ThemeOption> ThemeOptions { get; } =
     [
@@ -34,6 +38,17 @@ public partial class AppSettingsViewModel(
     [ObservableProperty]
     private bool _isHapticsEnabled;
 
+    [ObservableProperty]
+    private bool _isPro;
+
+    /// <summary>The debug Pro toggle is compiled in only in DEBUG builds.</summary>
+    public bool ShowDebugPro
+#if DEBUG
+        => true;
+#else
+        => false;
+#endif
+
     public ValueTask OnAppearingAsync()
     {
         foreach (var option in ThemeOptions)
@@ -42,6 +57,8 @@ public partial class AppSettingsViewModel(
         }
 
         IsHapticsEnabled = hapticService.IsEnabled;
+        _isPro = userSession.IsPro;
+        OnPropertyChanged(nameof(IsPro));
         return ValueTask.CompletedTask;
     }
 
@@ -58,7 +75,39 @@ public partial class AppSettingsViewModel(
         }
     }
 
+    // Manage favourites per category. The param is the PulseType name ("Mood"/"Need"/"Thought").
     [RelayCommand]
-    private async Task GoBack() =>
-        await navigationService.GoToAsync(Navigation.Relative().Pop());
+    private Task ManageFavorites(string category) =>
+        navigationService.GoToAsync(Navigation.Relative().Push<ManageFavoritesViewModel>()
+            .WithIntent(new ManageFavoritesIntent(Enum.Parse<Models.PulseType>(category))));
+
+    [RelayCommand]
+    private Task ManagePacks() =>
+        navigationService.GoToAsync(Navigation.Relative().Push<ManagePacksViewModel>());
+
+    // DEBUG-only Pro toggle. Calls the dev endpoint and refreshes the cached user so gating updates.
+    partial void OnIsProChanged(bool value)
+    {
+        if (value == userSession.IsPro)
+        {
+            return; // programmatic sync from OnAppearing — not a user toggle.
+        }
+
+        _ = SetProAsync(value);
+    }
+
+    private async Task SetProAsync(bool value)
+    {
+        try
+        {
+            var user = await api.SetProAsync(value);
+            userSession.Set(user);
+        }
+        catch (Exception ex)
+        {
+            await alerts.ShowErrorAsync(ex);
+            _isPro = userSession.IsPro;
+            OnPropertyChanged(nameof(IsPro));
+        }
+    }
 }

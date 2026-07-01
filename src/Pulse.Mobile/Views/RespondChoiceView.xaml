@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:BottomSheetPage
+    x:Class="Pulse.Views.RespondChoiceView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Pulse.UI.Controls"
+    xmlns:resources="clr-namespace:Pulse.Resources"
+    xmlns:vm="clr-namespace:Pulse.ViewModels"
+    Padding="0"
+    x:DataType="vm:RespondChoiceViewModel"
+    SafeAreaEdges="None">
+
+    <controls:BottomSheetPage.PopupContent>
+        <Border
+            Background="{DynamicResource Surface}"
+            Stroke="Transparent"
+            StrokeShape="RoundRectangle 24,24,0,0"
+            VerticalOptions="Fill">
+            <Border.Shadow>
+                <Shadow Brush="{DynamicResource Ink}" Opacity="0.12" Radius="16" Offset="0,-4" />
+            </Border.Shadow>
+
+            <Grid Padding="20,8,20,24" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="14" SafeAreaEdges="None">
+
+                <BoxView Grid.Row="0" Margin="0,4,0,0" Style="{StaticResource DragHandle}" />
+
+                <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0" Style="{StaticResource PageTitle}" Text="{Binding Title}" VerticalOptions="Center" />
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding CloseCommand}"
+                        StyleId="glass"
+                        Style="{StaticResource IconButtonGhost}"
+                        Text="{x:Static resources:MdiIcons.Close}" />
+                </Grid>
+
+                <Label Grid.Row="2" Style="{StaticResource BodySmall}" Text="{Binding Prompt}" />
+
+                <VerticalStackLayout Grid.Row="3" BindableLayout.ItemsSource="{Binding Options}" Spacing="12">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ChoiceOptionVm">
+                            <Border Padding="18,16" Style="{StaticResource SelectableTile}">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RespondChoiceViewModel}}, Path=PickCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <Border.Triggers>
+                                    <DataTrigger Binding="{Binding IsSelected}" TargetType="Border" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource BrandSoft}" />
+                                        <Setter Property="Stroke" Value="{DynamicResource Brand}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Label FontFamily="SansSemiBold" FontSize="17" Text="{Binding Label}" TextColor="{DynamicResource Ink}" />
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+            </Grid>
+        </Border>
+    </controls:BottomSheetPage.PopupContent>
+
+</controls:BottomSheetPage>

@@ -28,8 +28,4 @@ public partial class ResetPasswordViewModel(
             "Password reset by email is on the way. For now, contact support and we'll help you back in.");
         await navigationService.GoToAsync(Navigation.Relative().Pop());
     }
-
-    [RelayCommand]
-    private async Task GoBack() =>
-        await navigationService.GoToAsync(Navigation.Relative().Pop());
 }

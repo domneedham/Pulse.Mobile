@@ -9,10 +9,10 @@ namespace Pulse.Services;
 /// </summary>
 public static class AppConfig
 {
-    private const string ApiHost = "http://192.168.1.10:7080";
+    private const string ApiHost = "http://192.168.1.10:7090";
 
     /// <summary>Supabase Kong gateway (auth lives at {url}/auth/v1).</summary>
-    private const string SupabaseHost = "http://192.168.1.10:7079";
+    private const string SupabaseHost = "http://192.168.1.10:7089";
 
     /// <summary>Supabase anon key — copy from the Aspire dashboard ("apiservice" env: ConnectionStrings__supabase__Key).</summary>
     public const string SupabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";

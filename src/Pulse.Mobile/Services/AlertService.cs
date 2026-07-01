@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui.Alerts;
 using Microsoft.Extensions.DependencyInjection;
 using Nalu;
 using Pulse.ViewModels;
@@ -12,6 +13,9 @@ public interface IAlertService
 
     /// <summary>Presents an action sheet; returns the chosen option, or null if cancelled.</summary>
     Task<string?> ChooseAsync(string title, string cancel, params string[] options);
+
+    /// <summary>Brief, non-blocking confirmation (e.g. "Code copied").</summary>
+    Task ShowToastAsync(string message);
 
     /// <summary>Maps exceptions to a friendly alert; returns the message shown.</summary>
     Task ShowErrorAsync(Exception exception);
@@ -61,6 +65,9 @@ public class AlertService : IAlertService
         var choice = await Shell.Current.DisplayActionSheet(title, cancel, null, options);
         return choice == cancel ? null : choice;
     }
+
+    public Task ShowToastAsync(string message) =>
+        Toast.Make(message).Show();
 
     public Task ShowErrorAsync(Exception exception)
     {

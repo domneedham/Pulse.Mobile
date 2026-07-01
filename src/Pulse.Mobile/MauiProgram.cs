@@ -1,6 +1,13 @@
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using SkiaSharp.Views.Maui.Controls.Hosting;
+#if IOS
+using Microsoft.Maui.Platform;
+#endif
+using MauiIcons.Cupertino;
+using MauiIcons.Material.Outlined;
 using Nalu;
+using Plugin.Maui.Audio;
 using Pulse.Services;
 using Pulse.Services.Api;
 using Pulse.Services.Auth;
@@ -47,20 +54,77 @@ public static class MauiProgram
                     gesture.Enabled = false;
                 }
             });
+
+        // Liquid Glass close buttons: any Button with StyleId="glass" (the sheet X buttons) gets the
+        // native iOS 26 glass button material. On older iOS the call isn't available, so it falls back
+        // to the existing ghost styling — no visual regression.
+        Microsoft.Maui.Handlers.ButtonHandler.Mapper.AppendToMapping(
+            "LiquidGlassButton",
+            (handler, view) =>
+            {
+                if (view is not Button { StyleId: "glass" } glassButton)
+                {
+                    return;
+                }
+
+                if (OperatingSystem.IsIOSVersionAtLeast(26))
+                {
+                    var config = UIKit.UIButtonConfiguration.GlassButtonConfiguration;
+                    config.CornerStyle = UIKit.UIButtonConfigurationCornerStyle.Capsule;
+
+                    // The glass config replaces the button's content, so re-apply the MDI glyph (the
+                    // button's Text) as an attributed title using the mdi font, or it renders empty.
+                    var glyph = glassButton.Text ?? string.Empty;
+                    var color = glassButton.TextColor?.ToPlatform() ?? UIKit.UIColor.Label;
+                    // iOS needs the font's PostScript name, not the MAUI "mdi" alias.
+                    var font = UIKit.UIFont.FromName("MaterialDesignIcons", 20)
+                        ?? UIKit.UIFont.FromName("Material Design Icons", 20)
+                        ?? UIKit.UIFont.SystemFontOfSize(20);
+                    config.AttributedTitle = new Foundation.NSAttributedString(
+                        glyph,
+                        font: font,
+                        foregroundColor: color);
+
+                    handler.PlatformView.Configuration = config;
+                }
+            });
 #endif
 
         builder
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
+            .UseSkiaSharp()
+            .AddAudio()
+            // Native icon sets: Material Outlined (Android) + Cupertino (iOS). Icons are selected
+            // per-platform at each usage so the app reads native on each OS.
+            .UseMaterialOutlinedMauiIcons()
+            .UseCupertinoMauiIcons()
             .UseNaluLayouts()
-            .UseNaluTabBar()
             .UseNaluNavigation<App>(nav => nav
                 .AddPage<StartupViewModel, StartupView>()
                 .AddPage<SignInViewModel, SignInView>()
                 .AddPage<SignUpViewModel, SignUpView>()
                 .AddPage<ProfileSetupViewModel, ProfileSetupView>()
+                .AddPage<FavoritesOnboardingViewModel, FavoritesOnboardingView>()
+                .AddPage<ManageFavoritesViewModel, ManageFavoritesView>()
+                .AddPage<ManagePacksViewModel, ManagePacksView>()
                 .AddPage<ResetPasswordViewModel, ResetPasswordView>()
+                .AddPage<ConnectViewModel, ConnectView>()
                 .AddPage<HomeViewModel, HomeView>()
+                .AddPage<TrailViewModel, TrailView>()
+                .AddPage<PulseDetailViewModel, PulseDetailView>()
+                .AddPage<MomentDetailViewModel, MomentDetailView>()
+                .AddPage<MomentsViewModel, MomentsView>()
+                .AddPage<RespondTextViewModel, RespondTextView>()
+                .AddPage<RespondDrawingViewModel, RespondDrawingView>()
+                .AddPage<RespondPhotoViewModel, RespondPhotoView>()
+                .AddPage<RespondChoiceViewModel, RespondChoiceView>()
+                .AddPage<RespondVoiceViewModel, RespondVoiceView>()
+                .AddPage<ProfileViewModel, ProfileView>()
+                .AddPage<SendMoodViewModel, SendMoodView>()
+                .AddPage<SendNeedViewModel, SendNeedView>()
+                .AddPage<SendThoughtViewModel, SendThoughtView>()
+                .AddPage<SendTouchViewModel, SendTouchView>()
                 .AddPage<EditProfileViewModel, EditProfileView>()
                 .AddPage<AppSettingsViewModel, AppSettingsView>()
                 .AddPage<HelpSupportViewModel, HelpSupportView>()
@@ -118,6 +182,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<IThemeService, ThemeService>();
         builder.Services.AddSingleton<HapticService>();
         builder.Services.AddSingleton<UserSession>();
+        builder.Services.AddSingleton<ConnectionSession>();
+        builder.Services.AddSingleton<FavoritesSession>();
 
         // File logging: one shared LogStore feeds the provider (so all ILogger<T> output lands in
         // a rolling file) and ILogService (so the file can be viewed / shared / emailed in-app).

@@ -4,26 +4,38 @@ using Pulse.ViewModels;
 namespace Pulse.Services;
 
 /// <summary>
-/// Shared "where do we land after authenticating" logic. After sign-in, sign-up or the post-signup
-/// profile step, we load the user identity and route to the signed-in home. Centralised so every
-/// auth entry point behaves identically.
+/// Shared "where do we land after authenticating" logic. Loads the user identity + current
+/// connection, then routes to the right root: the signed-in app (Home) when the pair is linked,
+/// otherwise the pairing flow (Connect). Centralised so every auth entry point behaves identically.
 /// </summary>
 public static class AuthRouting
 {
     public static async Task GoAfterAuthAsync(
         UserSession userSession,
+        ConnectionSession connectionSession,
+        FavoritesSession favoritesSession,
         INavigationService navigationService)
     {
         try
         {
-            await userSession.LoadAsync();
+            var userTask = userSession.LoadAsync();
+            var favTask = favoritesSession.LoadAsync();
+            await connectionSession.LoadAsync();
+            await userTask;
+            await favTask;
         }
         catch
         {
-            // Offline / API down: still land on home; it can retry loading the profile.
+            // Offline / API down: fall through to routing; the destination screens can retry.
         }
 
-        await navigationService.GoToAsync(
-            Navigation.Absolute(NavigationBehavior.Immediate).Root<HomeViewModel>());
+        await GoToRootForStateAsync(connectionSession, navigationService);
     }
+
+    /// <summary>Routes to Home when connected, otherwise the Connect (pairing) screen.</summary>
+    public static Task GoToRootForStateAsync(
+        ConnectionSession connectionSession, INavigationService navigationService) =>
+        connectionSession.IsConnected
+            ? navigationService.GoToAsync(Navigation.Absolute(NavigationBehavior.Immediate).Root<HomeViewModel>())
+            : navigationService.GoToAsync(Navigation.Absolute(NavigationBehavior.Immediate).Root<ConnectViewModel>());
 }

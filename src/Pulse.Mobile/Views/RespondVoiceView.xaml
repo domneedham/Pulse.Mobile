@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:BottomSheetPage
+    x:Class="Pulse.Views.RespondVoiceView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Pulse.UI.Controls"
+    xmlns:resources="clr-namespace:Pulse.Resources"
+    xmlns:vm="clr-namespace:Pulse.ViewModels"
+    Padding="0"
+    x:DataType="vm:RespondVoiceViewModel"
+    SafeAreaEdges="None">
+
+    <controls:BottomSheetPage.PopupContent>
+        <Border
+            Background="{DynamicResource Surface}"
+            Stroke="Transparent"
+            StrokeShape="RoundRectangle 24,24,0,0"
+            VerticalOptions="Fill">
+            <Border.Shadow>
+                <Shadow Brush="{DynamicResource Ink}" Opacity="0.12" Radius="16" Offset="0,-4" />
+            </Border.Shadow>
+
+            <Grid Padding="20,8,20,24" RowDefinitions="Auto,Auto,*,Auto,Auto" RowSpacing="16" SafeAreaEdges="None">
+
+                <BoxView Grid.Row="0" Margin="0,4,0,0" Style="{StaticResource DragHandle}" />
+
+                <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0" Style="{StaticResource PageTitle}" Text="Voice note" VerticalOptions="Center" />
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding CloseCommand}"
+                        StyleId="glass"
+                        Style="{StaticResource IconButtonGhost}"
+                        Text="{x:Static resources:MdiIcons.Close}" />
+                </Grid>
+
+                <!--  Big record button (centered in the flexible space)  -->
+                <Border
+                    Grid.Row="2"
+                    Background="{DynamicResource BrandSoft}"
+                    HeightRequest="120"
+                    HorizontalOptions="Center"
+                    StrokeShape="RoundRectangle 60"
+                    StrokeThickness="0"
+                    VerticalOptions="Center"
+                    WidthRequest="120">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnRecordTapped" />
+                    </Border.GestureRecognizers>
+                    <controls:AppIcon
+                        x:Name="RecordGlyph"
+                        Color="{DynamicResource Brand}"
+                        Icon="Voice"
+                        Size="52" />
+                </Border>
+
+                <Label
+                    x:Name="StatusLabel"
+                    Grid.Row="3"
+                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    Style="{StaticResource BodyMedium}"
+                    Text="Tap to record" />
+
+                <Grid Grid.Row="4">
+                    <Button
+                        Command="{Binding SendCommand}"
+                        IsEnabled="{Binding HasRecording}"
+                        IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                        Text="Save voice note" />
+                    <ActivityIndicator HeightRequest="48" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+                </Grid>
+
+            </Grid>
+        </Border>
+    </controls:BottomSheetPage.PopupContent>
+
+</controls:BottomSheetPage>

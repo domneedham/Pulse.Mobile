@@ -3,37 +3,242 @@
     x:Class="Pulse.Views.HomeView"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Pulse.UI.Controls"
+    xmlns:resources="clr-namespace:Pulse.Resources"
     xmlns:vm="clr-namespace:Pulse.ViewModels"
     x:DataType="vm:HomeViewModel"
-    Shell.NavBarIsVisible="False"
-    Shell.TabBarIsVisible="False">
+    Shell.NavBarIsVisible="False">
 
-    <Grid Padding="28,32" RowDefinitions="*,Auto">
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsRefreshing}">
+        <ScrollView>
+            <VerticalStackLayout Padding="20,24,20,28" Spacing="26">
 
-        <VerticalStackLayout
-            Grid.Row="0"
-            Spacing="12"
-            VerticalOptions="Center">
-            <Label
-                FontFamily="SansExtraBold"
-                FontSize="48"
-                HorizontalOptions="Center"
-                Text="pulse"
-                TextColor="{DynamicResource Ink}" />
-            <Label
-                HorizontalOptions="Center"
-                HorizontalTextAlignment="Center"
-                Style="{StaticResource BodyMedium}"
-                Text="{Binding DisplayName, StringFormat='Signed in as {0}'}" />
-        </VerticalStackLayout>
+                <!--  Header: greeting + avatar  -->
+                <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                        <Label Style="{StaticResource BodyMedium}" Text="{Binding Greeting}" />
+                        <Label
+                            FontFamily="SansExtraBold"
+                            FontSize="30"
+                            Text="{Binding DisplayName}"
+                            TextColor="{DynamicResource Ink}" />
+                    </VerticalStackLayout>
+                    <controls:AvatarView
+                        Grid.Column="1"
+                        AvatarUrl="{Binding AvatarUrl}"
+                        DisplayName="{Binding DisplayName}"
+                        Size="44" />
+                </Grid>
 
-        <Button
-            Grid.Row="1"
-            Command="{Binding SignOutCommand}"
-            Style="{StaticResource GhostButton}"
-            Text="Sign out"
-            TextColor="{DynamicResource InkMid}" />
+                <!--  Today's Moment  -->
+                <VerticalStackLayout IsVisible="{Binding HasMoment}" Spacing="10">
+                    <HorizontalStackLayout Spacing="6">
+                        <Label FontFamily="SansExtraBold" FontSize="20" Text="Today's Moment" TextColor="{DynamicResource Ink}" />
+                        <Label FontSize="18" Text="✨" />
+                    </HorizontalStackLayout>
+                    <Label Style="{StaticResource BodySmall}" Text="{Binding MomentSubtitle}" />
 
-    </Grid>
+                    <Border Padding="18" Style="{StaticResource Card}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenMomentCommand}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="16">
+
+                            <!--  Category pill  -->
+                            <Border
+                                Padding="10,5"
+                                Background="{DynamicResource BrandSoft}"
+                                HorizontalOptions="Start"
+                                StrokeShape="RoundRectangle 8"
+                                StrokeThickness="0">
+                                <HorizontalStackLayout Spacing="6">
+                                    <controls:AppIcon Color="{DynamicResource Brand}" Icon="{Binding TodaysMoment.Icon}" Size="14" VerticalOptions="Center" />
+                                    <Label FontFamily="SansSemiBold" FontSize="12" Text="{Binding TodaysMoment.CategoryLabel}" TextColor="{DynamicResource Brand}" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                            </Border>
+
+                            <!--  Title + prompt + optional thumbnail  -->
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                <VerticalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
+                                    <Label FontFamily="SansExtraBold" FontSize="26" Text="{Binding TodaysMoment.Title}" TextColor="{DynamicResource Ink}" />
+                                    <Label Style="{StaticResource BodyMedium}" Text="{Binding TodaysMoment.Prompt}" />
+                                </VerticalStackLayout>
+                                <Border
+                                    Grid.Column="1"
+                                    HeightRequest="92"
+                                    IsVisible="{Binding TodaysMoment.HasThumbnail}"
+                                    Stroke="Transparent"
+                                    StrokeShape="RoundRectangle 14"
+                                    StrokeThickness="0"
+                                    VerticalOptions="Center"
+                                    WidthRequest="72">
+                                    <Grid>
+                                        <Image Aspect="AspectFill" IsVisible="{Binding TodaysMoment.HasPhoto}" Source="{Binding TodaysMoment.PhotoUrl}" />
+                                        <controls:StrokeView IsVisible="{Binding TodaysMoment.HasDrawing}" StrokeData="{Binding TodaysMoment.StrokeData}" />
+                                    </Grid>
+                                </Border>
+                            </Grid>
+
+                            <!--  Two-avatar progress row  -->
+                            <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
+                                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                    <Grid>
+                                        <controls:AvatarView AvatarUrl="{Binding TodaysMoment.MyAvatarUrl}" DisplayName="{Binding TodaysMoment.MyName}" Size="38" />
+                                        <Border
+                                            Background="{DynamicResource Brand}"
+                                            HeightRequest="16"
+                                            HorizontalOptions="End"
+                                            IsVisible="{Binding TodaysMoment.MyDone}"
+                                            StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 8"
+                                            VerticalOptions="End"
+                                            WidthRequest="16">
+                                            <controls:AppIcon Color="White" HorizontalOptions="Center" Icon="Check" Size="10" VerticalOptions="Center" />
+                                        </Border>
+                                    </Grid>
+                                    <Label FontSize="11" HorizontalOptions="Center" Style="{StaticResource Caption}" Text="{Binding TodaysMoment.MyName}" />
+                                </VerticalStackLayout>
+
+                                <BoxView Grid.Column="1" Background="{DynamicResource Stroke}" HeightRequest="2" Margin="10,0" VerticalOptions="Center" />
+
+                                <VerticalStackLayout Grid.Column="2" Spacing="4">
+                                    <Grid>
+                                        <controls:AvatarView AvatarUrl="{Binding TodaysMoment.PartnerAvatarUrl}" DisplayName="{Binding TodaysMoment.PartnerName}" Size="38" />
+                                        <Border
+                                            Background="{DynamicResource Brand}"
+                                            HeightRequest="16"
+                                            HorizontalOptions="End"
+                                            IsVisible="{Binding TodaysMoment.PartnerDone}"
+                                            StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 8"
+                                            VerticalOptions="End"
+                                            WidthRequest="16">
+                                            <controls:AppIcon Color="White" HorizontalOptions="Center" Icon="Check" Size="10" VerticalOptions="Center" />
+                                        </Border>
+                                    </Grid>
+                                    <Label FontSize="11" HorizontalOptions="Center" Style="{StaticResource Caption}" Text="{Binding TodaysMoment.PartnerName}" />
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <!--  Action / status  -->
+                            <Button
+                                Command="{Binding OpenMomentCommand}"
+                                IsVisible="{Binding TodaysMoment.CanRespond}"
+                                Text="Start Moment" />
+                            <Border
+                                Padding="12"
+                                Background="{DynamicResource BrandSoft}"
+                                IsVisible="{Binding TodaysMoment.CanRespond, Converter={StaticResource InvertedBoolConverter}}"
+                                Stroke="Transparent"
+                                StrokeShape="RoundRectangle 12"
+                                StrokeThickness="0">
+                                <HorizontalStackLayout HorizontalOptions="Center" Spacing="6">
+                                    <controls:AppIcon Color="{DynamicResource Brand}" Icon="Heart" IsVisible="{Binding TodaysMoment.IsComplete}" Size="15" VerticalOptions="Center" />
+                                    <Label FontFamily="SansSemiBold" FontSize="13" Text="{Binding TodaysMoment.StatusText}" TextColor="{DynamicResource Brand}" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                            </Border>
+
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!--  Quick Signals  -->
+                <VerticalStackLayout Spacing="12">
+                    <Label FontFamily="SansExtraBold" FontSize="20" Text="Quick Signals" TextColor="{DynamicResource Ink}" />
+                    <Label Style="{StaticResource BodySmall}" Text="Send a quick check-in anytime" />
+                    <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0" Spacing="8">
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SendMoodCommand}" />
+                            </VerticalStackLayout.GestureRecognizers>
+                            <Border Background="{DynamicResource BrandSoft}" HeightRequest="62" HorizontalOptions="Fill" StrokeShape="RoundRectangle 18" StrokeThickness="0">
+                                <controls:AppIcon Color="{DynamicResource Brand}" Icon="Mood" Size="26" />
+                            </Border>
+                            <Label HorizontalOptions="Center" Style="{StaticResource Caption}" Text="Mood" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="8">
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SendThoughtCommand}" />
+                            </VerticalStackLayout.GestureRecognizers>
+                            <Border Background="{DynamicResource BrandSoft}" HeightRequest="62" HorizontalOptions="Fill" StrokeShape="RoundRectangle 18" StrokeThickness="0">
+                                <controls:AppIcon Color="{DynamicResource Brand}" Icon="Thought" Size="26" />
+                            </Border>
+                            <Label HorizontalOptions="Center" Style="{StaticResource Caption}" Text="Thought" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="2" Spacing="8">
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SendNeedCommand}" />
+                            </VerticalStackLayout.GestureRecognizers>
+                            <Border Background="{DynamicResource BrandSoft}" HeightRequest="62" HorizontalOptions="Fill" StrokeShape="RoundRectangle 18" StrokeThickness="0">
+                                <controls:AppIcon Color="{DynamicResource Brand}" Icon="Need" Size="26" />
+                            </Border>
+                            <Label HorizontalOptions="Center" Style="{StaticResource Caption}" Text="Need" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="3" Spacing="8">
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SendTouchCommand}" />
+                            </VerticalStackLayout.GestureRecognizers>
+                            <Border Background="{DynamicResource AccentSoft}" HeightRequest="62" HorizontalOptions="Fill" StrokeShape="RoundRectangle 18" StrokeThickness="0">
+                                <controls:AppIcon Color="{DynamicResource Accent}" Icon="Touch" Size="26" />
+                            </Border>
+                            <Label HorizontalOptions="Center" Style="{StaticResource Caption}" Text="Touch" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+
+                <!--  Latest Signal  -->
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" FontFamily="SansExtraBold" FontSize="20" Text="Latest Signal" TextColor="{DynamicResource Ink}" />
+                        <Label Grid.Column="1" FontFamily="SansSemiBold" FontSize="14" Text="See all" TextColor="{DynamicResource Brand}" VerticalOptions="Center">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SeeAllCommand}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </Grid>
+
+                    <!--  Latest pulse row  -->
+                    <Border Padding="14" IsVisible="{Binding HasLatest}" Style="{StaticResource Card}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenLatestCommand}" />
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                            <Border Grid.Column="0" Background="{DynamicResource BrandSoft}" HeightRequest="44" StrokeShape="RoundRectangle 14" StrokeThickness="0" VerticalOptions="Center" WidthRequest="44">
+                                <controls:AppIcon Color="{DynamicResource Brand}" Icon="{Binding Latest.Icon}" Size="21" />
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                <Label FontFamily="SansBold" FontSize="16" Text="{Binding Latest.Text}" TextColor="{DynamicResource Ink}" />
+                                <Label Style="{StaticResource Caption}" Text="{Binding Latest.When}" />
+                            </VerticalStackLayout>
+                            <controls:AppIcon Grid.Column="2" Color="{DynamicResource InkLight}" Icon="ChevronRight" Size="20" VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+
+                    <!--  Empty state  -->
+                    <Border Padding="20,28" IsVisible="{Binding ShowEmptyState}" Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="12">
+                            <Border
+                                Background="{DynamicResource AccentSoft}"
+                                HeightRequest="72"
+                                HorizontalOptions="Center"
+                                StrokeShape="RoundRectangle 36"
+                                StrokeThickness="0"
+                                WidthRequest="72">
+                                <controls:AppIcon Color="{DynamicResource Accent}" Icon="HeartOutline" Size="34" />
+                            </Border>
+                            <Label FontFamily="SansBold" FontSize="18" HorizontalOptions="Center" Text="No signals yet" TextColor="{DynamicResource Ink}" />
+                            <Label HorizontalOptions="Center" Style="{StaticResource BodySmall}" Text="Send the first signal." />
+                            <Button
+                                Margin="0,4,0,0"
+                                Command="{Binding SendThoughtCommand}"
+                                Style="{StaticResource SecondaryButton}"
+                                Text="Send a signal" />
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
 
 </ContentPage>

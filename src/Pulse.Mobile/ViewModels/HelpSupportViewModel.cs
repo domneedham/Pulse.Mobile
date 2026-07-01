@@ -14,7 +14,6 @@ namespace Pulse.ViewModels;
 /// </summary>
 public partial class HelpSupportViewModel(
     ILogService logService,
-    INavigationService navigationService,
     IAlertService alerts) : ObservableObject
 {
     [RelayCommand]
@@ -42,8 +41,4 @@ public partial class HelpSupportViewModel(
             await alerts.ShowErrorAsync(ex);
         }
     }
-
-    [RelayCommand]
-    private async Task GoBack() =>
-        await navigationService.GoToAsync(Navigation.Relative().Pop());
 }

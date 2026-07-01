@@ -37,16 +37,6 @@ public class AvatarView : Border
         set => SetValue(SizeProperty, value);
     }
 
-    private static readonly (Color Bg, Color Fg)[] Palette =
-    [
-        (Color.FromArgb("#FFE0D1"), Color.FromArgb("#C2470F")),
-        (Color.FromArgb("#D9EAC8"), Color.FromArgb("#48702A")),
-        (Color.FromArgb("#D4E0F5"), Color.FromArgb("#3A5795")),
-        (Color.FromArgb("#F4E3C2"), Color.FromArgb("#94621B")),
-        (Color.FromArgb("#E6DCF2"), Color.FromArgb("#6B4E9E")),
-        (Color.FromArgb("#CCE9E4"), Color.FromArgb("#2E7468")),
-    ];
-
     private readonly Label _initials;
     private readonly Image _image;
 
@@ -76,10 +66,8 @@ public class AvatarView : Border
         StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = (float)(Size / 2) };
 
         var name = string.IsNullOrWhiteSpace(DisplayName) ? "?" : DisplayName.Trim();
-        var (bg, fg) = Palette[Math.Abs(StableHash(name)) % Palette.Length];
-
-        Background = new SolidColorBrush(bg);
-        _initials.TextColor = fg;
+        Background = new SolidColorBrush(PersonColors.Background(name));
+        _initials.TextColor = PersonColors.Foreground(name);
         _initials.FontSize = Size * 0.38;
         _initials.Text = Initials(name);
 
@@ -94,20 +82,5 @@ public class AvatarView : Border
         return parts.Length >= 2
             ? $"{char.ToUpperInvariant(parts[0][0])}{char.ToUpperInvariant(parts[^1][0])}"
             : char.ToUpperInvariant(name[0]).ToString();
-    }
-
-    /// <summary>string.GetHashCode is randomised per process; colours must survive restarts.</summary>
-    private static int StableHash(string value)
-    {
-        unchecked
-        {
-            int hash = 23;
-            foreach (char c in value)
-            {
-                hash = hash * 31 + c;
-            }
-
-            return hash;
-        }
     }
 }

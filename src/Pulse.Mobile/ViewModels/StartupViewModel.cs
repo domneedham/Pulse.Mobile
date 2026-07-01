@@ -11,6 +11,8 @@ public record StartupIntent;
 public partial class StartupViewModel(
     IAuthService authService,
     UserSession userSession,
+    ConnectionSession connectionSession,
+    FavoritesSession favoritesSession,
     IDispatcher dispatcher,
     INavigationService navigationService,
     ILogger<StartupViewModel> logger) : ObservableObject, IAppearingAware<StartupIntent>
@@ -37,14 +39,18 @@ public partial class StartupViewModel(
 
         try
         {
-            await userSession.LoadAsync();
+            var userTask = userSession.LoadAsync();
+            var favTask = favoritesSession.LoadAsync();
+            await connectionSession.LoadAsync();
+            await userTask;
+            await favTask;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Startup: failed to load user; continuing to home");
-            // Offline / API down: still land on home, which can retry loading the profile.
+            logger.LogError(ex, "Startup: failed to load user/connection; routing on best-effort state");
+            // Offline / API down: route on whatever state we have; the destination can retry.
         }
 
-        await navigationService.GoToAsync(Navigation.Absolute(NavigationBehavior.Immediate).Root<HomeViewModel>());
+        await AuthRouting.GoToRootForStateAsync(connectionSession, navigationService);
     }
 }

@@ -215,8 +215,4 @@ public partial class EditProfileViewModel(
             IsBusy = false;
         }
     }
-
-    [RelayCommand]
-    private async Task GoBack() =>
-        await navigationService.GoToAsync(Navigation.Relative().Pop());
 }

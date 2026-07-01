@@ -32,10 +32,12 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
-	<!-- Profile photo: choosing from the library or taking a new one. -->
+	<!-- Profile photo + photo Moments: choosing from the library or taking a new one. -->
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Pulse needs access to your photos so you can set a profile picture.</string>
+	<string>Pulse needs access to your photos so you can set a profile picture and answer photo Moments.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Pulse needs camera access so you can take a profile picture.</string>
+	<string>Pulse needs camera access so you can take a profile picture and capture photo Moments.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Pulse needs microphone access so you can record voice Moments.</string>
 </dict>
 </plist>

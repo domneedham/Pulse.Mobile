@@ -3,15 +3,60 @@
     x:Class="Pulse.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Pulse.UI.Controls"
+    xmlns:mi="http://www.aathifmahir.com/dotnet/2022/maui/icons"
     xmlns:nalu="https://nalu-development.github.com/nalu/navigation"
     xmlns:onboarding="clr-namespace:Pulse.Views.Onboarding"
-    xmlns:views="clr-namespace:Pulse.Views"
-    Shell.NavBarIsVisible="False">
+    xmlns:resources="clr-namespace:Pulse.Resources"
+    xmlns:views="clr-namespace:Pulse.Views">
 
+    <Shell.Resources>
+        <!--
+            Tab bar: coral active, muted inactive. No background colour is set so iOS keeps its
+            native Liquid Glass material behind the tabs (an opaque fill would defeat it).
+        -->
+        <Style
+            x:Key="PulseTabBar"
+            ApplyToDerivedTypes="True"
+            TargetType="TabBar">
+            <Setter Property="Shell.TabBarForegroundColor" Value="{DynamicResource Brand}" />
+            <Setter Property="Shell.TabBarTitleColor" Value="{DynamicResource Brand}" />
+            <Setter Property="Shell.TabBarUnselectedColor" Value="{DynamicResource InkLight}" />
+        </Style>
+    </Shell.Resources>
+
+    <!--  Tab-less roots: splash, signed-out, and pre-connection pairing  -->
     <ShellContent nalu:Navigation.PageType="views:StartupView" Shell.TabBarIsVisible="False" />
 
     <ShellContent nalu:Navigation.PageType="onboarding:SignUpView" Shell.TabBarIsVisible="False" />
 
-    <ShellContent nalu:Navigation.PageType="views:HomeView" Shell.TabBarIsVisible="False" />
+    <ShellContent nalu:Navigation.PageType="onboarding:SignInView" Shell.TabBarIsVisible="False" />
+
+    <ShellContent nalu:Navigation.PageType="views:ConnectView" Shell.TabBarIsVisible="False" />
+
+    <!--  Signed-in + connected experience: bottom tabs Home / Pulses / Profile.
+          Nalu requires each tab wrapped in a <Tab> element (not bare ShellContent under TabBar).-->
+    <TabBar Style="{StaticResource PulseTabBar}">
+        <Tab Title="Home">
+            <Tab.Icon>
+                <controls:AppIconSource Icon="Home" />
+            </Tab.Icon>
+            <ShellContent nalu:Navigation.PageType="views:HomeView" />
+        </Tab>
+
+        <Tab Title="Trail">
+            <Tab.Icon>
+                <controls:AppIconSource Icon="Trail" />
+            </Tab.Icon>
+            <ShellContent nalu:Navigation.PageType="views:TrailView" />
+        </Tab>
+
+        <Tab Title="Profile">
+            <Tab.Icon>
+                <controls:AppIconSource Icon="Profile" />
+            </Tab.Icon>
+            <ShellContent nalu:Navigation.PageType="views:ProfileView" />
+        </Tab>
+    </TabBar>
 
 </nalu:NaluShell>

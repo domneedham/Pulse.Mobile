@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:BottomSheetPage
+    x:Class="Pulse.Views.RespondTextView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Pulse.UI.Controls"
+    xmlns:resources="clr-namespace:Pulse.Resources"
+    xmlns:vm="clr-namespace:Pulse.ViewModels"
+    Padding="0"
+    x:DataType="vm:RespondTextViewModel"
+    SafeAreaEdges="None">
+
+    <controls:BottomSheetPage.PopupContent>
+        <Border
+            Background="{DynamicResource Surface}"
+            Stroke="Transparent"
+            StrokeShape="RoundRectangle 24,24,0,0"
+            VerticalOptions="Fill">
+            <Border.Shadow>
+                <Shadow Brush="{DynamicResource Ink}" Opacity="0.12" Radius="16" Offset="0,-4" />
+            </Border.Shadow>
+
+            <Grid Padding="20,8,20,24" RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="14" SafeAreaEdges="None">
+
+                <BoxView Grid.Row="0" Margin="0,4,0,0" Style="{StaticResource DragHandle}" />
+
+                <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0" Style="{StaticResource PageTitle}" Text="{Binding Title}" VerticalOptions="Center" />
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding CloseCommand}"
+                        StyleId="glass"
+                        Style="{StaticResource IconButtonGhost}"
+                        Text="{x:Static resources:MdiIcons.Close}" />
+                </Grid>
+
+                <Label Grid.Row="2" Style="{StaticResource BodySmall}" Text="{Binding Prompt}" />
+
+                <Border Grid.Row="3" Padding="12,4" Style="{StaticResource InputField}">
+                    <Editor
+                        MaxLength="280"
+                        Placeholder="Write your answer…"
+                        Text="{Binding Text}" />
+                </Border>
+
+                <Grid Grid.Row="4">
+                    <Button
+                        Command="{Binding SendCommand}"
+                        IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                        Text="Save answer" />
+                    <ActivityIndicator HeightRequest="48" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+                </Grid>
+
+            </Grid>
+        </Border>
+    </controls:BottomSheetPage.PopupContent>
+
+</controls:BottomSheetPage>
