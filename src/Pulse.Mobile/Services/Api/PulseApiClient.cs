@@ -32,6 +32,8 @@ public interface IPulseApiClient
     Task<PulseModel?> GetLatestPulseAsync(CancellationToken ct = default);
     Task<IReadOnlyList<PulseModel>> GetTimelineAsync(DateTimeOffset? before = null, int limit = 50, CancellationToken ct = default);
     Task<PulseModel> GetPulseAsync(Guid id, CancellationToken ct = default);
+    /// <summary>The vector stroke JSON for a PulseTouch — fetched on demand when the doodle viewer opens.</summary>
+    Task<PulseTouch> GetTouchAsync(Guid id, CancellationToken ct = default);
     Task<IReadOnlyList<PulseModel>> GetFavoritesAsync(CancellationToken ct = default);
     Task<IReadOnlyList<PulseModel>> SearchPulsesAsync(string query, CancellationToken ct = default);
     Task<PulseModel> SendMoodAsync(string text, string? emoji, string? note = null, CancellationToken ct = default);
@@ -161,6 +163,9 @@ public class PulseApiClient : IPulseApiClient
 
     public Task<PulseModel> GetPulseAsync(Guid id, CancellationToken ct = default) =>
         GetAsync<PulseModel>($"pulses/{id}", ct);
+
+    public Task<PulseTouch> GetTouchAsync(Guid id, CancellationToken ct = default) =>
+        GetAsync<PulseTouch>($"pulses/{id}/touch", ct);
 
     public Task<IReadOnlyList<PulseModel>> GetFavoritesAsync(CancellationToken ct = default) =>
         GetAsync<IReadOnlyList<PulseModel>>("pulses/favorites", ct);

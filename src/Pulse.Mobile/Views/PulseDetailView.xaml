@@ -44,8 +44,24 @@
                         FontSize="26"
                         HorizontalOptions="Center"
                         HorizontalTextAlignment="Center"
+                        IsVisible="{Binding IsTouch, Converter={StaticResource InvertedBoolConverter}}"
                         Text="{Binding Text}"
                         TextColor="{DynamicResource Ink}" />
+
+                    <!--  PulseTouch doodle — replays the strokes as they were drawn.  -->
+                    <Border
+                        Margin="0,4"
+                        Background="{DynamicResource PageBackground}"
+                        HeightRequest="260"
+                        HorizontalOptions="Fill"
+                        IsVisible="{Binding IsTouch}"
+                        Stroke="{DynamicResource Stroke}"
+                        StrokeShape="RoundRectangle 14"
+                        StrokeThickness="1"
+                        WidthRequest="260">
+                        <controls:StrokeReplayView StrokeData="{Binding StrokeData}" />
+                    </Border>
+
                     <Border
                         Padding="12,5"
                         Background="{DynamicResource BrandSoft}"

@@ -44,6 +44,14 @@ public partial class PulseDetailViewModel(
 
     public bool HasNote => !string.IsNullOrWhiteSpace(Note);
 
+    /// <summary>Whether this pulse is a PulseTouch doodle (renders the stroke replay instead of the hero text).</summary>
+    [ObservableProperty]
+    private bool _isTouch;
+
+    /// <summary>The doodle's stroke JSON, fetched separately once the pulse is known to be a Touch. Null until loaded.</summary>
+    [ObservableProperty]
+    private string? _strokeData;
+
     /// <summary>"From {name}" / "Sent to {name}" — the sender attribution line.</summary>
     [ObservableProperty]
     private string _attribution = string.Empty;
@@ -81,6 +89,12 @@ public partial class PulseDetailViewModel(
         {
             var pulse = await api.GetPulseAsync(_pulseId);
             Bind(pulse);
+
+            if (IsTouch)
+            {
+                var touch = await api.GetTouchAsync(_pulseId);
+                StrokeData = touch.StrokeData;
+            }
         }
         catch (Exception ex)
         {
@@ -96,6 +110,7 @@ public partial class PulseDetailViewModel(
         Text = pulse.Text;
         TypeLabel = pulse.Type.ToString();
         Note = pulse.Note;
+        IsTouch = pulse.Type == PulseType.Touch;
         IsFavorite = pulse.IsFavorite;
         CanDelete = pulse.SentByMe;
         IsFromPartner = !pulse.SentByMe;

@@ -77,6 +77,9 @@ public record Pulse(
 
 public record SetReactionRequest(string? Emoji);
 
+/// <summary>The vector stroke JSON for a PulseTouch, fetched separately when the doodle is opened.</summary>
+public record PulseTouch(Guid Id, string StrokeData);
+
 // --- Favourites ---
 
 public record Favorite(Guid Id, PulseType Category, string Text, string Emoji, int SortOrder);

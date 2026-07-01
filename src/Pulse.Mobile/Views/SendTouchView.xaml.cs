@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Pulse.UI;
 using Pulse.UI.Controls;
 using Pulse.ViewModels;
@@ -8,7 +9,7 @@ namespace Pulse.Views;
 
 /// <summary>
 /// PulseTouch drawing sheet. Captures finger strokes on an SKCanvasView, renders them live, and on
-/// Send serialises them to a normalised <see cref="TouchDrawing"/> (points 0–1) for the API.
+/// Send serialises them to a normalised <see cref="TouchDrawing"/> (points 0–1, timed) for the API.
 /// </summary>
 public partial class SendTouchView : BottomSheetPage
 {
@@ -18,6 +19,10 @@ public partial class SendTouchView : BottomSheetPage
     private readonly List<DrawnStroke> _strokes = [];
     private DrawnStroke? _current;
     private SKSize _canvasSize;
+
+    // Elapsed time since the first touch of the drawing, stamped on every point so the viewer can
+    // replay the doodle at the pace it was actually drawn. Starts on the first Pressed of the session.
+    private readonly Stopwatch _stopwatch = new();
 
     public SendTouchView(SendTouchViewModel vm)
     {
@@ -34,6 +39,7 @@ public partial class SendTouchView : BottomSheetPage
     {
         _strokes.Clear();
         _current = null;
+        _stopwatch.Reset();
         Canvas.InvalidateSurface();
     }
 
@@ -42,14 +48,19 @@ public partial class SendTouchView : BottomSheetPage
         switch (e.ActionType)
         {
             case SKTouchAction.Pressed:
+                if (!_stopwatch.IsRunning)
+                {
+                    _stopwatch.Start();
+                }
+
                 _current = new DrawnStroke(_vm.SelectedColor);
-                _current.Points.Add(e.Location);
+                _current.Points.Add((e.Location, (int)_stopwatch.ElapsedMilliseconds));
                 _strokes.Add(_current);
                 e.Handled = true;
                 break;
 
             case SKTouchAction.Moved when _current is not null:
-                _current.Points.Add(e.Location);
+                _current.Points.Add((e.Location, (int)_stopwatch.ElapsedMilliseconds));
                 e.Handled = true;
                 break;
 
@@ -87,16 +98,16 @@ public partial class SendTouchView : BottomSheetPage
             paint.Color = SKColor.TryParse(stroke.Color, out var c) ? c : SKColors.Black;
 
             using var path = new SKPath();
-            path.MoveTo(stroke.Points[0]);
+            path.MoveTo(stroke.Points[0].Location);
             for (var i = 1; i < stroke.Points.Count; i++)
             {
-                path.LineTo(stroke.Points[i]);
+                path.LineTo(stroke.Points[i].Location);
             }
 
             // A single tap (one point) draws a dot.
             if (stroke.Points.Count == 1)
             {
-                canvas.DrawCircle(stroke.Points[0], paint.StrokeWidth / 2, new SKPaint { Color = paint.Color, IsAntialias = true });
+                canvas.DrawCircle(stroke.Points[0].Location, paint.StrokeWidth / 2, new SKPaint { Color = paint.Color, IsAntialias = true });
             }
             else
             {
@@ -122,7 +133,7 @@ public partial class SendTouchView : BottomSheetPage
             .Select(s => new TouchStroke(
                 s.Color,
                 widthNormalised,
-                s.Points.Select(p => new TouchPoint(p.X / w, p.Y / h)).ToList()))
+                s.Points.Select(p => new TouchPoint(p.Location.X / w, p.Location.Y / h, p.ElapsedMs)).ToList()))
             .ToList();
 
         return new TouchDrawing(TouchDrawing.CurrentVersion, strokes);
@@ -134,6 +145,6 @@ public partial class SendTouchView : BottomSheetPage
     private sealed class DrawnStroke(string color)
     {
         public string Color { get; } = color;
-        public List<SKPoint> Points { get; } = [];
+        public List<(SKPoint Location, int ElapsedMs)> Points { get; } = [];
     }
 }
