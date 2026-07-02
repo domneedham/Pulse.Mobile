@@ -7,6 +7,7 @@
     xmlns:resources="clr-namespace:Pulse.Resources"
     xmlns:vm="clr-namespace:Pulse.ViewModels"
     x:DataType="vm:ProfileViewModel"
+    Shell.TabBarIsVisible="False"
     Title="Profile">
 
     <!--  SafeAreaEdges None on the root Grid: without it, the Grid's own safe-area inset breaks the

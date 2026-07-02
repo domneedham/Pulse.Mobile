@@ -111,6 +111,7 @@ public static class MauiProgram
                 .AddPage<ConnectViewModel, ConnectView>()
                 .AddPage<HomeViewModel, HomeView>()
                 .AddPage<TrailViewModel, TrailView>()
+                .AddPage<TogetherViewModel, TogetherView>()
                 .AddPage<PulseDetailViewModel, PulseDetailView>()
                 .AddPage<MomentDetailViewModel, MomentDetailView>()
                 .AddPage<MomentsViewModel, MomentsView>()

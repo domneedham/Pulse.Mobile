@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Pulse.Views.TogetherView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Pulse.UI.Controls"
+    xmlns:vm="clr-namespace:Pulse.ViewModels"
+    x:DataType="vm:TogetherViewModel"
+    Title="Together">
+
+    <!--  SafeAreaEdges None on the root Grid: without it, the Grid's own safe-area inset breaks the
+          large-title-to-small-title collapse animation on scroll (see
+          https://github.com/dotnet/maui/issues/33037#issuecomment-3657086914), matching Home/Trail/Profile.  -->
+    <Grid SafeAreaEdges="None">
+        <VerticalStackLayout HorizontalOptions="Center" Padding="20" Spacing="12" VerticalOptions="Center">
+            <controls:AppIcon Color="{DynamicResource InkLight}" HorizontalOptions="Center" Icon="Heart" Size="40" />
+            <Label
+                FontFamily="SansBold"
+                FontSize="18"
+                HorizontalOptions="Center"
+                HorizontalTextAlignment="Center"
+                Text="Coming soon"
+                TextColor="{DynamicResource Ink}" />
+        </VerticalStackLayout>
+
+        <controls:ComposeButton />
+    </Grid>
+
+</ContentPage>

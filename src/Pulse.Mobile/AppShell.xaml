@@ -34,7 +34,8 @@
 
     <ShellContent nalu:Navigation.PageType="views:ConnectView" Shell.TabBarIsVisible="False" />
 
-    <!--  Signed-in + connected experience: bottom tabs Home / Pulses / Profile.
+    <!--  Signed-in + connected experience: bottom tabs Home / Trail / Together. Profile is reachable
+          from a toolbar item on every tab (see ProfileToolbarItem) rather than being a tab itself.
           Nalu requires each tab wrapped in a <Tab> element (not bare ShellContent under TabBar).-->
     <TabBar Style="{StaticResource PulseTabBar}">
         <Tab Title="Home">
@@ -51,11 +52,11 @@
             <ShellContent nalu:Navigation.PageType="views:TrailView" />
         </Tab>
 
-        <Tab Title="Profile">
+        <Tab Title="Together">
             <Tab.Icon>
-                <controls:AppIconSource Icon="Profile" />
+                <controls:AppIconSource Icon="Heart" />
             </Tab.Icon>
-            <ShellContent nalu:Navigation.PageType="views:ProfileView" />
+            <ShellContent nalu:Navigation.PageType="views:TogetherView" />
         </Tab>
     </TabBar>
 
