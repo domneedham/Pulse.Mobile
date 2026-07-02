@@ -6,12 +6,10 @@ namespace Pulse.Views;
 
 public partial class TrailView : ContentPage
 {
-    public TrailView(TrailViewModel vm, INavigationService navigationService)
+    public TrailView(TrailViewModel vm)
     {
         InitializeComponent();
         BindingContext = vm;
         LargeTitles.Enable(this);
-        ComposeToolbarItem.Add(this, vm.OpenComposeCommand);
-        ProfileToolbarItem.Add(this, navigationService);
     }
 }

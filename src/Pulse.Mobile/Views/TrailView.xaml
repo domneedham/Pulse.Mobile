@@ -5,23 +5,184 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:Pulse.UI.Controls"
     xmlns:vm="clr-namespace:Pulse.ViewModels"
+    Title="Your Trail"
     x:DataType="vm:TrailViewModel"
-    Title="Your Trail">
+    SafeAreaEdges="None">
 
-    <!--  SafeAreaEdges None on the root Grid: without it, the Grid's own safe-area inset breaks the
-          large-title-to-small-title collapse animation on scroll (confirmed via
-          https://github.com/dotnet/maui/issues/33037#issuecomment-3657086914) — the title just
-          vanishes instead of shrinking, the same fix already applied to PulseDetailView.  -->
-    <Grid SafeAreaEdges="None">
-    <Grid Padding="20,8,20,0">
+    <Grid Padding="20,8,20,0" SafeAreaEdges="None">
 
-        <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsRefreshing}">
-            <Grid>
+        <RefreshView
+            Command="{Binding RefreshCommand}"
+            IsRefreshing="{Binding IsRefreshing}"
+            SafeAreaEdges="None">
+            <Grid SafeAreaEdges="None">
 
                 <CollectionView
                     IsGrouped="True"
                     ItemsSource="{Binding Groups}"
                     SelectionMode="None">
+
+                    <!--
+                        Today's Moment — pinned above the timeline (today already sorts first in the
+                        day-grouped list below, but the thing that still needs doing deserves its own
+                        card rather than blending into the history).
+                    -->
+                    <CollectionView.Header>
+                        <VerticalStackLayout Padding="0,0,0,18" IsVisible="{Binding HasMoment}">
+                            <Border Padding="18" Style="{StaticResource Card}">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenMomentCommand}" />
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout Spacing="16">
+
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Border
+                                            Grid.Column="0"
+                                            Padding="10,5"
+                                            Background="{DynamicResource BrandSoft}"
+                                            HorizontalOptions="Start"
+                                            StrokeShape="RoundRectangle 8"
+                                            StrokeThickness="0">
+                                            <HorizontalStackLayout Spacing="6">
+                                                <controls:AppIcon
+                                                    Icon="{Binding TodaysMoment.Icon}"
+                                                    Size="14"
+                                                    VerticalOptions="Center"
+                                                    Color="{DynamicResource Brand}" />
+                                                <Label
+                                                    FontFamily="SansSemiBold"
+                                                    FontSize="12"
+                                                    Text="{Binding TodaysMoment.CategoryLabel}"
+                                                    TextColor="{DynamicResource Brand}"
+                                                    VerticalOptions="Center" />
+                                            </HorizontalStackLayout>
+                                        </Border>
+                                        <Label
+                                            Grid.Column="1"
+                                            FontFamily="SansBold"
+                                            FontSize="11"
+                                            Text="{Binding TodaysMoment.ActionLabel}"
+                                            TextColor="{DynamicResource Brand}"
+                                            VerticalOptions="Center" />
+                                    </Grid>
+
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                        <VerticalStackLayout
+                                            Grid.Column="0"
+                                            Spacing="6"
+                                            VerticalOptions="Center">
+                                            <Label
+                                                FontFamily="SansExtraBold"
+                                                FontSize="26"
+                                                Text="{Binding TodaysMoment.Title}"
+                                                TextColor="{DynamicResource Ink}" />
+                                            <Label Style="{StaticResource BodyMedium}" Text="{Binding TodaysMoment.Prompt}" />
+                                        </VerticalStackLayout>
+                                        <Grid
+                                            Grid.Column="1"
+                                            HeightRequest="88"
+                                            VerticalOptions="Center"
+                                            WidthRequest="100">
+                                            <controls:MomentThumbnailView
+                                                HeightRequest="80"
+                                                HorizontalOptions="Start"
+                                                PersonName="{Binding TodaysMoment.PartnerName}"
+                                                PhotoUrl="{Binding TodaysMoment.PartnerPhotoUrl}"
+                                                Rotation="-12"
+                                                StrokeData="{Binding TodaysMoment.PartnerStrokeData}"
+                                                WidthRequest="64"
+                                                ZIndex="0" />
+                                            <controls:MomentThumbnailView
+                                                HeightRequest="80"
+                                                HorizontalOptions="End"
+                                                PersonName="{Binding TodaysMoment.MyName}"
+                                                PhotoUrl="{Binding TodaysMoment.MyPhotoUrl}"
+                                                Rotation="12"
+                                                StrokeData="{Binding TodaysMoment.MyStrokeData}"
+                                                WidthRequest="64"
+                                                ZIndex="1" />
+                                        </Grid>
+                                    </Grid>
+
+                                    <!--  Two-avatar progress row  -->
+                                    <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                            <Grid>
+                                                <controls:AvatarView
+                                                    AvatarUrl="{Binding TodaysMoment.MyAvatarUrl}"
+                                                    DisplayName="{Binding TodaysMoment.MyName}"
+                                                    Size="38" />
+                                                <Border
+                                                    Background="{DynamicResource Brand}"
+                                                    HeightRequest="16"
+                                                    HorizontalOptions="End"
+                                                    IsVisible="{Binding TodaysMoment.MyDone}"
+                                                    StrokeShape="RoundRectangle 8"
+                                                    StrokeThickness="0"
+                                                    VerticalOptions="End"
+                                                    WidthRequest="16">
+                                                    <controls:AppIcon
+                                                        HorizontalOptions="Center"
+                                                        Icon="Check"
+                                                        Size="10"
+                                                        VerticalOptions="Center"
+                                                        Color="White" />
+                                                </Border>
+                                            </Grid>
+                                            <Label
+                                                FontSize="11"
+                                                HorizontalOptions="Center"
+                                                Style="{StaticResource Caption}"
+                                                Text="{Binding TodaysMoment.MyName}" />
+                                        </VerticalStackLayout>
+
+                                        <BoxView
+                                            Grid.Column="1"
+                                            Margin="10,0"
+                                            Background="{DynamicResource Stroke}"
+                                            HeightRequest="2"
+                                            VerticalOptions="Center" />
+
+                                        <VerticalStackLayout Grid.Column="2" Spacing="4">
+                                            <Grid>
+                                                <controls:AvatarView
+                                                    AvatarUrl="{Binding TodaysMoment.PartnerAvatarUrl}"
+                                                    DisplayName="{Binding TodaysMoment.PartnerName}"
+                                                    Size="38" />
+                                                <Border
+                                                    Background="{DynamicResource Brand}"
+                                                    HeightRequest="16"
+                                                    HorizontalOptions="End"
+                                                    IsVisible="{Binding TodaysMoment.PartnerDone}"
+                                                    StrokeShape="RoundRectangle 8"
+                                                    StrokeThickness="0"
+                                                    VerticalOptions="End"
+                                                    WidthRequest="16">
+                                                    <controls:AppIcon
+                                                        HorizontalOptions="Center"
+                                                        Icon="Check"
+                                                        Size="10"
+                                                        VerticalOptions="Center"
+                                                        Color="White" />
+                                                </Border>
+                                            </Grid>
+                                            <Label
+                                                FontSize="11"
+                                                HorizontalOptions="Center"
+                                                Style="{StaticResource Caption}"
+                                                Text="{Binding TodaysMoment.PartnerName}" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+
+                                    <Button
+                                        Command="{Binding OpenMomentCommand}"
+                                        IsVisible="{Binding TodaysMoment.CanRespond}"
+                                        Text="Start Moment" />
+
+                                </VerticalStackLayout>
+                            </Border>
+                        </VerticalStackLayout>
+                    </CollectionView.Header>
 
                     <!--  Date label on the timeline spine  -->
                     <CollectionView.GroupHeaderTemplate>
@@ -39,9 +200,7 @@
                         <DataTemplate x:DataType="vm:TrailRowVm">
                             <Grid ColumnDefinitions="44,*" RowDefinitions="*">
                                 <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TrailViewModel}}, Path=OpenItemCommand}"
-                                        CommandParameter="{Binding .}" />
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TrailViewModel}}, Path=OpenItemCommand}" CommandParameter="{Binding .}" />
                                 </Grid.GestureRecognizers>
 
                                 <!--  Spine: continuous vertical line + node dot centered on the row  -->
@@ -55,8 +214,8 @@
                                         Background="{DynamicResource PageBackground}"
                                         HeightRequest="22"
                                         HorizontalOptions="Center"
-                                        StrokeThickness="0"
                                         StrokeShape="RoundRectangle 11"
+                                        StrokeThickness="0"
                                         VerticalOptions="Center"
                                         WidthRequest="22">
                                         <!--  Inner dot: moments = accent (purple); pulses = sender's person colour  -->
@@ -64,8 +223,8 @@
                                             Background="{Binding NodeColor}"
                                             HeightRequest="13"
                                             HorizontalOptions="Center"
-                                            StrokeThickness="0"
                                             StrokeShape="RoundRectangle 6.5"
+                                            StrokeThickness="0"
                                             VerticalOptions="Center"
                                             WidthRequest="13" />
                                     </Border>
@@ -74,18 +233,55 @@
                                 <!--  Content  -->
                                 <Grid Grid.Column="1" Padding="6,8,0,8">
 
-                                    <!--  Pulse row  -->
-                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" IsVisible="{Binding IsPulse}">
-                                        <Border Grid.Column="0" Background="{Binding BadgeTint}" HeightRequest="38" StrokeShape="RoundRectangle 12" StrokeThickness="0" VerticalOptions="Center" WidthRequest="38">
-                                            <controls:AppIcon Color="{Binding NodeColor}" Icon="{Binding Icon}" Size="19" />
-                                        </Border>
-                                        <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
-                                            <Label Style="{StaticResource BodyMedium}" Text="{Binding Text}" />
-                                            <Label IsVisible="{Binding HasNote}" LineBreakMode="TailTruncation" MaxLines="1" Style="{StaticResource BodySmall}" Text="{Binding Note}" />
-                                            <Label Style="{StaticResource Caption}" Text="{Binding When}" />
+                                    <!--  Pulse row — a plain card: avatar + "You"/name + category on top,
+                                          timestamp trailing; body is either the phrase text or, for a
+                                          Touch pulse, the stroke drawing rendered inline.  -->
+                                    <Border Padding="12" IsVisible="{Binding IsPulse}" Style="{StaticResource Card}">
+                                        <VerticalStackLayout Spacing="8">
+                                            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
+                                                <controls:AvatarView
+                                                    Grid.Column="0"
+                                                    AvatarUrl="{Binding PersonAvatarUrl}"
+                                                    DisplayName="{Binding PersonName}"
+                                                    Size="26" />
+                                                <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                                                    <Label FontFamily="SansBold" FontSize="14" Text="{Binding PersonLabel}" TextColor="{DynamicResource Ink}" />
+                                                    <Label FontSize="13" Style="{StaticResource Caption}" Text="{Binding CategoryLabel}" VerticalOptions="Center" />
+                                                </HorizontalStackLayout>
+                                                <controls:AppIcon
+                                                    Grid.Column="2"
+                                                    Icon="Star"
+                                                    IsVisible="{Binding IsFavorite}"
+                                                    Size="14"
+                                                    VerticalOptions="Center"
+                                                    Color="{DynamicResource Accent}" />
+                                                <Label Grid.Column="3" Style="{StaticResource Caption}" Text="{Binding When}" VerticalOptions="Center" />
+                                            </Grid>
+
+                                            <!--  Drawing pulse: the stroke playback IS the content.  -->
+                                            <Border
+                                                Padding="8"
+                                                Background="{DynamicResource PageBackground}"
+                                                HeightRequest="120"
+                                                IsVisible="{Binding IsPulseDrawing}"
+                                                Stroke="{DynamicResource Stroke}"
+                                                StrokeShape="RoundRectangle 12"
+                                                StrokeThickness="1">
+                                                <controls:StrokeView StrokeData="{Binding StrokeData}" />
+                                            </Border>
+
+                                            <!--  Phrase pulse: text (+ optional note).  -->
+                                            <VerticalStackLayout IsVisible="{Binding IsPulseDrawing, Converter={StaticResource InvertedBoolConverter}}" Spacing="2">
+                                                <Label Style="{StaticResource BodyMedium}" Text="{Binding Text}" />
+                                                <Label
+                                                    IsVisible="{Binding HasNote}"
+                                                    LineBreakMode="TailTruncation"
+                                                    MaxLines="2"
+                                                    Style="{StaticResource BodySmall}"
+                                                    Text="{Binding Note}" />
+                                            </VerticalStackLayout>
                                         </VerticalStackLayout>
-                                        <controls:AppIcon Grid.Column="2" Color="{DynamicResource Accent}" Icon="Star" IsVisible="{Binding IsFavorite}" Size="15" VerticalOptions="Center" />
-                                    </Grid>
+                                    </Border>
 
                                     <!--  Moment card  -->
                                     <Border
@@ -96,15 +292,42 @@
                                         StrokeShape="RoundRectangle 16"
                                         StrokeThickness="0">
                                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                                            <Border Grid.Column="0" Background="{DynamicResource Surface}" HeightRequest="40" StrokeShape="RoundRectangle 12" StrokeThickness="0" VerticalOptions="Center" WidthRequest="40">
-                                                <controls:AppIcon Color="{DynamicResource Accent}" Icon="{Binding Icon}" Size="20" />
+                                            <Border
+                                                Grid.Column="0"
+                                                Background="{DynamicResource Surface}"
+                                                HeightRequest="40"
+                                                StrokeShape="RoundRectangle 12"
+                                                StrokeThickness="0"
+                                                VerticalOptions="Center"
+                                                WidthRequest="40">
+                                                <controls:AppIcon
+                                                    Icon="{Binding Icon}"
+                                                    Size="20"
+                                                    Color="{DynamicResource Accent}" />
                                             </Border>
-                                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                                <Label FontFamily="SansBold" FontSize="15" Text="{Binding Text}" TextColor="{DynamicResource Ink}" />
+                                            <VerticalStackLayout
+                                                Grid.Column="1"
+                                                Spacing="2"
+                                                VerticalOptions="Center">
+                                                <Label
+                                                    FontFamily="SansBold"
+                                                    FontSize="15"
+                                                    Text="{Binding Text}"
+                                                    TextColor="{DynamicResource Ink}" />
                                                 <Label Style="{StaticResource Caption}" Text="{Binding CategoryLabel}" />
                                                 <HorizontalStackLayout Spacing="5">
-                                                    <controls:AppIcon Color="{DynamicResource Brand}" Icon="Heart" IsVisible="{Binding MomentComplete}" Size="12" VerticalOptions="Center" />
-                                                    <Label FontFamily="SansSemiBold" FontSize="11" Text="{Binding MomentStatus}" TextColor="{DynamicResource Brand}" VerticalOptions="Center" />
+                                                    <controls:AppIcon
+                                                        Icon="Heart"
+                                                        IsVisible="{Binding MomentComplete}"
+                                                        Size="12"
+                                                        VerticalOptions="Center"
+                                                        Color="{DynamicResource Brand}" />
+                                                    <Label
+                                                        FontFamily="SansSemiBold"
+                                                        FontSize="11"
+                                                        Text="{Binding MomentStatus}"
+                                                        TextColor="{DynamicResource Brand}"
+                                                        VerticalOptions="Center" />
                                                 </HorizontalStackLayout>
                                             </VerticalStackLayout>
 
@@ -119,11 +342,20 @@
                                                 VerticalOptions="Center"
                                                 WidthRequest="48">
                                                 <Grid>
-                                                    <Image Aspect="AspectFill" IsVisible="{Binding HasPhoto}" Source="{Binding PhotoUrl}" />
+                                                    <Image
+                                                        Aspect="AspectFill"
+                                                        IsVisible="{Binding HasPhoto}"
+                                                        Source="{Binding PhotoUrl}" />
                                                     <controls:StrokeView IsVisible="{Binding HasDrawing}" StrokeData="{Binding StrokeData}" />
                                                 </Grid>
                                             </Border>
-                                            <controls:AppIcon Grid.Column="2" Color="{DynamicResource InkLight}" Icon="ChevronRight" IsVisible="{Binding HasThumbnail, Converter={StaticResource InvertedBoolConverter}}" Size="20" VerticalOptions="Center" />
+                                            <controls:AppIcon
+                                                Grid.Column="2"
+                                                Icon="ChevronRight"
+                                                IsVisible="{Binding HasThumbnail, Converter={StaticResource InvertedBoolConverter}}"
+                                                Size="20"
+                                                VerticalOptions="Center"
+                                                Color="{DynamicResource InkLight}" />
                                         </Grid>
                                     </Border>
 
@@ -134,8 +366,18 @@
 
                     <CollectionView.Footer>
                         <Grid Padding="0,24,0,32" ColumnDefinitions="44,*">
-                            <BoxView Grid.Column="0" Background="{DynamicResource Stroke}" HeightRequest="20" HorizontalOptions="Center" VerticalOptions="Start" WidthRequest="2" />
-                            <Label Grid.Column="1" Style="{StaticResource Caption}" Text="The beginning of your trail." VerticalOptions="Center" />
+                            <BoxView
+                                Grid.Column="0"
+                                Background="{DynamicResource Stroke}"
+                                HeightRequest="20"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Start"
+                                WidthRequest="2" />
+                            <Label
+                                Grid.Column="1"
+                                Style="{StaticResource Caption}"
+                                Text="The beginning of your trail."
+                                VerticalOptions="Center" />
                         </Grid>
                     </CollectionView.Footer>
                 </CollectionView>
@@ -152,18 +394,32 @@
                         StrokeShape="RoundRectangle 48"
                         StrokeThickness="0"
                         WidthRequest="96">
-                        <controls:AppIcon Color="{DynamicResource Accent}" HorizontalOptions="Center" Icon="Trail" Size="44" VerticalOptions="Center" />
+                        <controls:AppIcon
+                            HorizontalOptions="Center"
+                            Icon="Trail"
+                            Size="44"
+                            VerticalOptions="Center"
+                            Color="{DynamicResource Accent}" />
                     </Border>
-                    <Label FontFamily="SansBold" FontSize="20" HorizontalOptions="Center" Text="Your trail starts here" TextColor="{DynamicResource Ink}" />
-                    <Label HorizontalOptions="Center" HorizontalTextAlignment="Center" Style="{StaticResource BodySmall}" Text="Send a pulse or complete today's Moment to begin your story together." />
+                    <Label
+                        FontFamily="SansBold"
+                        FontSize="20"
+                        HorizontalOptions="Center"
+                        Text="Your trail starts here"
+                        TextColor="{DynamicResource Ink}" />
+                    <Label
+                        HorizontalOptions="Center"
+                        HorizontalTextAlignment="Center"
+                        Style="{StaticResource BodySmall}"
+                        Text="Send a pulse or complete today's Moment to begin your story together." />
                 </VerticalStackLayout>
 
             </Grid>
         </RefreshView>
 
+        <controls:ComposeButton />
+
     </Grid>
 
-    <controls:ComposeButton />
-    </Grid>
 
 </ContentPage>

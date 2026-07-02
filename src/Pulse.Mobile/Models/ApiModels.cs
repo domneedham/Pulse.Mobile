@@ -73,7 +73,9 @@ public record Pulse(
     DateTimeOffset CreatedAt,
     bool IsFavorite = false,
     string? Reaction = null,
-    string? Note = null);
+    string? Note = null,
+    // Touch-only: inlined so the Trail timeline can render the doodle without a per-item fetch.
+    string? StrokeData = null);
 
 public record SetReactionRequest(string? Emoji);
 

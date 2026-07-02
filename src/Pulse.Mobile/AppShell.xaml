@@ -8,56 +8,35 @@
     xmlns:nalu="https://nalu-development.github.com/nalu/navigation"
     xmlns:onboarding="clr-namespace:Pulse.Views.Onboarding"
     xmlns:resources="clr-namespace:Pulse.Resources"
-    xmlns:views="clr-namespace:Pulse.Views">
+    xmlns:views="clr-namespace:Pulse.Views"
+    FlyoutBackgroundColor="{DynamicResource PageBackground}"
+    FlyoutHeaderBehavior="Fixed">
 
-    <Shell.Resources>
-        <!--
-            Tab bar: coral active, muted inactive. No background colour is set so iOS keeps its
-            native Liquid Glass material behind the tabs (an opaque fill would defeat it).
-        -->
-        <Style
-            x:Key="PulseTabBar"
-            ApplyToDerivedTypes="True"
-            TargetType="TabBar">
-            <Setter Property="Shell.TabBarForegroundColor" Value="{DynamicResource Brand}" />
-            <Setter Property="Shell.TabBarTitleColor" Value="{DynamicResource Brand}" />
-            <Setter Property="Shell.TabBarUnselectedColor" Value="{DynamicResource InkLight}" />
-        </Style>
-    </Shell.Resources>
+    <Shell.FlyoutHeader>
+        <controls:FlyoutHeaderView x:Name="TheFlyoutHeader" />
+    </Shell.FlyoutHeader>
 
-    <!--  Tab-less roots: splash, signed-out, and pre-connection pairing  -->
-    <ShellContent nalu:Navigation.PageType="views:StartupView" Shell.TabBarIsVisible="False" />
+    <Shell.FlyoutContent>
+        <!--  Only lists what's actually built (Profile & settings). Calendar, Date nights, Wishlist,
+              Present ideas, and Couple goals join here once those screens exist.  -->
+        <VerticalStackLayout Padding="8,4,8,0" Spacing="2">
+            <Label Margin="12,10,0,4" Style="{StaticResource SectionLabel}" Text="You" />
+            <controls:FlyoutMenuRow Command="{Binding Source={x:Reference TheFlyoutHeader}, Path=OpenProfileCommand}" Icon="Profile" Text="Profile &amp; settings" />
+        </VerticalStackLayout>
+    </Shell.FlyoutContent>
 
-    <ShellContent nalu:Navigation.PageType="onboarding:SignUpView" Shell.TabBarIsVisible="False" />
+    <!--  Tab-less roots: splash, signed-out, and pre-connection pairing. FlyoutBehavior=Disabled so the
+          hamburger/swipe gesture never appears before there's a flyout worth showing.  -->
+    <ShellContent nalu:Navigation.PageType="views:StartupView" Shell.FlyoutBehavior="Disabled" />
 
-    <ShellContent nalu:Navigation.PageType="onboarding:SignInView" Shell.TabBarIsVisible="False" />
+    <ShellContent nalu:Navigation.PageType="onboarding:SignUpView" Shell.FlyoutBehavior="Disabled" />
 
-    <ShellContent nalu:Navigation.PageType="views:ConnectView" Shell.TabBarIsVisible="False" />
+    <ShellContent nalu:Navigation.PageType="onboarding:SignInView" Shell.FlyoutBehavior="Disabled" />
 
-    <!--  Signed-in + connected experience: bottom tabs Home / Trail / Together. Profile is reachable
-          from a toolbar item on every tab (see ProfileToolbarItem) rather than being a tab itself.
-          Nalu requires each tab wrapped in a <Tab> element (not bare ShellContent under TabBar).-->
-    <TabBar Style="{StaticResource PulseTabBar}">
-        <Tab Title="Home">
-            <Tab.Icon>
-                <controls:AppIconSource Icon="Home" />
-            </Tab.Icon>
-            <ShellContent nalu:Navigation.PageType="views:HomeView" />
-        </Tab>
+    <ShellContent nalu:Navigation.PageType="views:ConnectView" Shell.FlyoutBehavior="Disabled" />
 
-        <Tab Title="Trail">
-            <Tab.Icon>
-                <controls:AppIconSource Icon="Trail" />
-            </Tab.Icon>
-            <ShellContent nalu:Navigation.PageType="views:TrailView" />
-        </Tab>
-
-        <Tab Title="Together">
-            <Tab.Icon>
-                <controls:AppIconSource Icon="Heart" />
-            </Tab.Icon>
-            <ShellContent nalu:Navigation.PageType="views:TogetherView" />
-        </Tab>
-    </TabBar>
+    <!--  Signed-in + connected experience: no tab bar. Trail is the single home page — today's Moment
+          sits pinned at the top, history scrolls below.  -->
+    <ShellContent Shell.FlyoutBehavior="Flyout" nalu:Navigation.PageType="views:TrailView" />
 
 </nalu:NaluShell>

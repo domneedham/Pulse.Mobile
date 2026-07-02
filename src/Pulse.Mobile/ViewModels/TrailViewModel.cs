@@ -30,9 +30,10 @@ public record TrailRowVm(
     string MomentStatus,
     // Person (pulse sender) — drives the node colour so each partner reads consistently
     string PersonName = "",
+    string? PersonAvatarUrl = null,
     // Optional pulse note
     string? Note = null,
-    // Thumbnail (completed photo / drawing moment)
+    // Thumbnail (completed photo / drawing moment) and inline pulse drawing (PulseTouch)
     string? PhotoUrl = null,
     string? StrokeData = null)
 {
@@ -40,6 +41,9 @@ public record TrailRowVm(
 
     public bool IsMoment => Kind == TrailItemKind.Moment;
     public bool IsPulse => Kind == TrailItemKind.Pulse;
+
+    /// <summary>Sent-by-me pulses read "You" on the row; moments have no attribution row.</summary>
+    public string PersonLabel => SentByMe ? "You" : PersonName;
 
     /// <summary>Pulse nodes/badges take the sender's person colour; moments use the shared accent (purple).</summary>
     public Color NodeColor => IsMoment ? AccentColor : PersonColors.Foreground(PersonName);
@@ -54,6 +58,9 @@ public record TrailRowVm(
     public bool HasPhoto => !string.IsNullOrEmpty(PhotoUrl);
     public bool HasDrawing => !string.IsNullOrEmpty(StrokeData);
     public bool HasThumbnail => HasPhoto || HasDrawing;
+
+    /// <summary>Pulse-only: a Touch pulse renders its stroke drawing inline instead of the text line.</summary>
+    public bool IsPulseDrawing => IsPulse && HasDrawing;
 }
 
 /// <summary>A date-grouped section of the Trail ("Today", "Yesterday", or a date).</summary>
@@ -62,10 +69,34 @@ public class TrailGroup(string title) : ObservableCollection<TrailRowVm>
     public string Title { get; } = title;
 }
 
+/// <summary>Today's Moment, pinned above the Trail timeline — the one thing that needs completing.</summary>
+public record TodaysMomentVm(
+    Guid Id,
+    PulseIcon Icon,
+    string CategoryLabel,
+    string Title,
+    string Prompt,
+    string ActionLabel,
+    bool CanRespond,
+    // Two-avatar progress row
+    string MyName,
+    string? MyAvatarUrl,
+    bool MyDone,
+    string PartnerName,
+    string? PartnerAvatarUrl,
+    bool PartnerDone,
+    // Each person's own response — the thumbnail slot always shows both (MomentThumbnailView falls
+    // back to that person's initials on their colour when they haven't shared a photo/drawing yet).
+    string? MyPhotoUrl,
+    string? MyStrokeData,
+    string? PartnerPhotoUrl,
+    string? PartnerStrokeData);
+
 /// <summary>
-/// The Trail tab — the couple's shared story: pulses and daily Moments interleaved into one
-/// chronological, day-grouped timeline (the storyboard's "Your Trail"). Tapping a pulse opens its
-/// detail; tapping a moment opens the moment detail / respond flow.
+/// The Trail — the app's home page. Today's Moment is pinned at the top (today naturally sorts first
+/// in the day-grouped timeline anyway); pulses and daily Moments already sent/completed scroll below,
+/// interleaved into one chronological, day-grouped timeline. Tapping a pulse opens its detail; tapping
+/// a moment opens the moment detail / respond flow.
 /// </summary>
 public partial class TrailViewModel(
     IPulseApiClient api,
@@ -74,7 +105,16 @@ public partial class TrailViewModel(
     INavigationService navigationService,
     ILogger<TrailViewModel> logger) : ObservableObject, IAppearingAware
 {
+    public string DisplayName => userSession.DisplayName;
+    public string? AvatarUrl => userSession.AvatarUrl;
+    public string PartnerName => connectionSession.Partner?.DisplayName ?? "your partner";
+    public string? PartnerAvatarUrl => connectionSession.Partner?.AvatarUrl;
+
     public ObservableCollection<TrailGroup> Groups { get; } = [];
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasMoment))]
+    private TodaysMomentVm? _todaysMoment;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsEmpty))]
@@ -83,7 +123,8 @@ public partial class TrailViewModel(
     [ObservableProperty]
     private bool _isRefreshing;
 
-    public bool IsEmpty => HasLoaded && Groups.Count == 0;
+    public bool HasMoment => TodaysMoment is not null;
+    public bool IsEmpty => HasLoaded && Groups.Count == 0 && TodaysMoment is null;
 
     public async ValueTask OnAppearingAsync() => await LoadAsync();
 
@@ -112,10 +153,58 @@ public partial class TrailViewModel(
         {
             logger.LogError(ex, "Trail: failed to load");
         }
-        finally
+
+        await LoadTodaysMomentAsync();
+
+        HasLoaded = true;
+    }
+
+    private async Task LoadTodaysMomentAsync()
+    {
+        try
         {
-            HasLoaded = true;
+            var m = await api.GetTodayMomentAsync();
+
+            var myResponse = m.Responses.FirstOrDefault(r => r.SubmittedByMe);
+            var partnerResponse = m.Responses.FirstOrDefault(r => !r.SubmittedByMe);
+
+            TodaysMoment = new TodaysMomentVm(
+                m.Id,
+                MomentDisplay.CategoryIcon(m.Category),
+                MomentDisplay.CategoryLabel(m.Category),
+                m.Title,
+                m.Prompt,
+                MomentDisplay.ActionLabel(m.ResponseKind),
+                CanRespond: !m.MyResponseSubmitted,
+                MyName: DisplayName,
+                MyAvatarUrl: AvatarUrl,
+                MyDone: m.MyResponseSubmitted,
+                PartnerName: PartnerName,
+                PartnerAvatarUrl: PartnerAvatarUrl,
+                PartnerDone: m.PartnerResponded,
+                MyPhotoUrl: myResponse?.PhotoUrl,
+                MyStrokeData: myResponse?.StrokeData,
+                PartnerPhotoUrl: partnerResponse?.PhotoUrl,
+                PartnerStrokeData: partnerResponse?.StrokeData);
         }
+        catch (Exception ex)
+        {
+            // No connection yet, or the moments endpoint is unreachable — just hide the card.
+            logger.LogError(ex, "Trail: failed to load today's moment");
+            TodaysMoment = null;
+        }
+    }
+
+    [RelayCommand]
+    private Task OpenMoment()
+    {
+        if (TodaysMoment is null)
+        {
+            return Task.CompletedTask;
+        }
+
+        return navigationService.GoToAsync(Navigation.Relative().Push<MomentDetailViewModel>()
+            .WithIntent(new MomentDetailIntent(TodaysMoment.Id)));
     }
 
     [RelayCommand]
@@ -173,10 +262,11 @@ public partial class TrailViewModel(
             var person = p.SentByMe
                 ? userSession.DisplayName
                 : connectionSession.Partner?.DisplayName ?? "Partner";
+            var avatar = p.SentByMe ? AvatarUrl : PartnerAvatarUrl;
             return new TrailRowVm(
                 TrailItemKind.Pulse, p.Id, p.Emoji, PulseDisplay.CategoryIcon(p.Type), p.Text, when, p.SentByMe, p.IsFavorite,
-                CategoryLabel: string.Empty, MomentComplete: false, MomentStatus: string.Empty,
-                PersonName: person, Note: p.Note);
+                CategoryLabel: PulseDisplay.CategoryLabel(p.Type), MomentComplete: false, MomentStatus: string.Empty,
+                PersonName: person, PersonAvatarUrl: avatar, Note: p.Note, StrokeData: p.StrokeData);
         }
 
         if (item is { Kind: TrailItemKind.Moment, Moment: { } m })

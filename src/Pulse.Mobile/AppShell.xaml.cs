@@ -12,7 +12,5 @@ public partial class AppShell : NaluShell
         InitializeComponent();
     }
 
-    // The iOS Shell tab bar already renders with the native Liquid Glass material, so we deliberately
-    // do NOT override UITabBarAppearance here — a manual blur/background would replace (and downgrade)
-    // the system glass. Tab colours come from the PulseTabBar style in AppShell.xaml.
+    // No tab bar — navigation is a single Trail root plus a Shell flyout (see AppShell.xaml).
 }

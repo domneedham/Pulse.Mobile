@@ -5,7 +5,7 @@ namespace Pulse.Services;
 
 /// <summary>
 /// Shared "where do we land after authenticating" logic. Loads the user identity + current
-/// connection, then routes to the right root: the signed-in app (Home) when the pair is linked,
+/// connection, then routes to the right root: the signed-in app (Trail) when the pair is linked,
 /// otherwise the pairing flow (Connect). Centralised so every auth entry point behaves identically.
 /// </summary>
 public static class AuthRouting
@@ -32,10 +32,10 @@ public static class AuthRouting
         await GoToRootForStateAsync(connectionSession, navigationService);
     }
 
-    /// <summary>Routes to Home when connected, otherwise the Connect (pairing) screen.</summary>
+    /// <summary>Routes to Trail when connected, otherwise the Connect (pairing) screen.</summary>
     public static Task GoToRootForStateAsync(
         ConnectionSession connectionSession, INavigationService navigationService) =>
         connectionSession.IsConnected
-            ? navigationService.GoToAsync(Navigation.Absolute(NavigationBehavior.Immediate).Root<HomeViewModel>())
+            ? navigationService.GoToAsync(Navigation.Absolute(NavigationBehavior.Immediate).Root<TrailViewModel>())
             : navigationService.GoToAsync(Navigation.Absolute(NavigationBehavior.Immediate).Root<ConnectViewModel>());
 }
