@@ -13,7 +13,9 @@ namespace Pulse.ViewModels;
 
 /// <summary>
 /// A row on the Trail — either a pulse or a moment. One template renders both; <see cref="IsMoment"/>
-/// switches the layout. Pulse fields mirror the pulse row; moment fields carry the card data.
+/// switches the layout. Pulse fields mirror the pulse row; moment fields carry the big moment-card data
+/// (the same layout for every moment regardless of day — today's incomplete moment just naturally sorts
+/// to the top of the "Today" group, and moves down the trail like any other day once it's done).
 /// </summary>
 public record TrailRowVm(
     TrailItemKind Kind,
@@ -26,8 +28,6 @@ public record TrailRowVm(
     bool IsFavorite,
     // Moment-only
     string CategoryLabel,
-    bool MomentComplete,
-    string MomentStatus,
     // Person (pulse sender) — drives the node colour so each partner reads consistently
     string PersonName = "",
     string? PersonAvatarUrl = null,
@@ -35,7 +35,22 @@ public record TrailRowVm(
     string? Note = null,
     // Thumbnail (completed photo / drawing moment) and inline pulse drawing (PulseTouch)
     string? PhotoUrl = null,
-    string? StrokeData = null)
+    string? StrokeData = null,
+    // Moment big-card fields (title/prompt reuse Text/CategoryLabel is the pill; ActionLabel/CanRespond
+    // drive the action button; the two-avatar progress row + each person's own thumbnail)
+    string? Prompt = null,
+    string? ActionLabel = null,
+    bool CanRespond = false,
+    string MyName = "",
+    string? MyAvatarUrl = null,
+    bool MyDone = false,
+    string PartnerName = "",
+    string? PartnerAvatarUrl = null,
+    bool PartnerDone = false,
+    string? MyPhotoUrl = null,
+    string? MyStrokeData = null,
+    string? PartnerPhotoUrl = null,
+    string? PartnerStrokeData = null)
 {
     public bool HasNote => !string.IsNullOrWhiteSpace(Note);
 
@@ -69,34 +84,12 @@ public class TrailGroup(string title) : ObservableCollection<TrailRowVm>
     public string Title { get; } = title;
 }
 
-/// <summary>Today's Moment, pinned above the Trail timeline — the one thing that needs completing.</summary>
-public record TodaysMomentVm(
-    Guid Id,
-    PulseIcon Icon,
-    string CategoryLabel,
-    string Title,
-    string Prompt,
-    string ActionLabel,
-    bool CanRespond,
-    // Two-avatar progress row
-    string MyName,
-    string? MyAvatarUrl,
-    bool MyDone,
-    string PartnerName,
-    string? PartnerAvatarUrl,
-    bool PartnerDone,
-    // Each person's own response — the thumbnail slot always shows both (MomentThumbnailView falls
-    // back to that person's initials on their colour when they haven't shared a photo/drawing yet).
-    string? MyPhotoUrl,
-    string? MyStrokeData,
-    string? PartnerPhotoUrl,
-    string? PartnerStrokeData);
-
 /// <summary>
-/// The Trail — the app's home page. Today's Moment is pinned at the top (today naturally sorts first
-/// in the day-grouped timeline anyway); pulses and daily Moments already sent/completed scroll below,
-/// interleaved into one chronological, day-grouped timeline. Tapping a pulse opens its detail; tapping
-/// a moment opens the moment detail / respond flow.
+/// The Trail — the app's home page. Every Moment (today's and past ones alike) renders as the same big
+/// card inline in the day-grouped timeline alongside pulses; today's naturally sorts to the top since
+/// "Today" is always the first group, and once it's answered it's just another (still big-card) entry
+/// that moves down the trail as new days are added above it. Tapping a pulse opens its detail; tapping a
+/// moment opens the moment detail / respond flow.
 /// </summary>
 public partial class TrailViewModel(
     IPulseApiClient api,
@@ -113,18 +106,13 @@ public partial class TrailViewModel(
     public ObservableCollection<TrailGroup> Groups { get; } = [];
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasMoment))]
-    private TodaysMomentVm? _todaysMoment;
-
-    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsEmpty))]
     private bool _hasLoaded;
 
     [ObservableProperty]
     private bool _isRefreshing;
 
-    public bool HasMoment => TodaysMoment is not null;
-    public bool IsEmpty => HasLoaded && Groups.Count == 0 && TodaysMoment is null;
+    public bool IsEmpty => HasLoaded && Groups.Count == 0;
 
     public async ValueTask OnAppearingAsync() => await LoadAsync();
 
@@ -154,57 +142,7 @@ public partial class TrailViewModel(
             logger.LogError(ex, "Trail: failed to load");
         }
 
-        await LoadTodaysMomentAsync();
-
         HasLoaded = true;
-    }
-
-    private async Task LoadTodaysMomentAsync()
-    {
-        try
-        {
-            var m = await api.GetTodayMomentAsync();
-
-            var myResponse = m.Responses.FirstOrDefault(r => r.SubmittedByMe);
-            var partnerResponse = m.Responses.FirstOrDefault(r => !r.SubmittedByMe);
-
-            TodaysMoment = new TodaysMomentVm(
-                m.Id,
-                MomentDisplay.CategoryIcon(m.Category),
-                MomentDisplay.CategoryLabel(m.Category),
-                m.Title,
-                m.Prompt,
-                MomentDisplay.ActionLabel(m.ResponseKind),
-                CanRespond: !m.MyResponseSubmitted,
-                MyName: DisplayName,
-                MyAvatarUrl: AvatarUrl,
-                MyDone: m.MyResponseSubmitted,
-                PartnerName: PartnerName,
-                PartnerAvatarUrl: PartnerAvatarUrl,
-                PartnerDone: m.PartnerResponded,
-                MyPhotoUrl: myResponse?.PhotoUrl,
-                MyStrokeData: myResponse?.StrokeData,
-                PartnerPhotoUrl: partnerResponse?.PhotoUrl,
-                PartnerStrokeData: partnerResponse?.StrokeData);
-        }
-        catch (Exception ex)
-        {
-            // No connection yet, or the moments endpoint is unreachable — just hide the card.
-            logger.LogError(ex, "Trail: failed to load today's moment");
-            TodaysMoment = null;
-        }
-    }
-
-    [RelayCommand]
-    private Task OpenMoment()
-    {
-        if (TodaysMoment is null)
-        {
-            return Task.CompletedTask;
-        }
-
-        return navigationService.GoToAsync(Navigation.Relative().Push<MomentDetailViewModel>()
-            .WithIntent(new MomentDetailIntent(TodaysMoment.Id)));
     }
 
     [RelayCommand]
@@ -265,35 +203,33 @@ public partial class TrailViewModel(
             var avatar = p.SentByMe ? AvatarUrl : PartnerAvatarUrl;
             return new TrailRowVm(
                 TrailItemKind.Pulse, p.Id, p.Emoji, PulseDisplay.CategoryIcon(p.Type), p.Text, when, p.SentByMe, p.IsFavorite,
-                CategoryLabel: PulseDisplay.CategoryLabel(p.Type), MomentComplete: false, MomentStatus: string.Empty,
+                CategoryLabel: PulseDisplay.CategoryLabel(p.Type),
                 PersonName: person, PersonAvatarUrl: avatar, Note: p.Note, StrokeData: p.StrokeData);
         }
 
         if (item is { Kind: TrailItemKind.Moment, Moment: { } m })
         {
-            var status = m.IsComplete
-                ? "Together, today"
-                : m.MyResponseSubmitted
-                    ? "Waiting for your partner"
-                    : m.PartnerResponded
-                        ? "Your partner answered — your turn"
-                        : "Tap to start";
-
-            // Thumbnail comes from a revealed response (only present once completed). Prefer a photo.
-            var photo = m.Responses.FirstOrDefault(r => !string.IsNullOrEmpty(r.PhotoUrl))?.PhotoUrl;
-            var drawing = photo is null
-                ? m.Responses.FirstOrDefault(r => !string.IsNullOrEmpty(r.StrokeData))?.StrokeData
-                : null;
+            var myResponse = m.Responses.FirstOrDefault(r => r.SubmittedByMe);
+            var partnerResponse = m.Responses.FirstOrDefault(r => !r.SubmittedByMe);
 
             return new TrailRowVm(
                 TrailItemKind.Moment, m.Id, m.Emoji, MomentDisplay.CategoryIcon(m.Category), m.Title,
                 When: MomentDisplay.CategoryLabel(m.Category),
                 SentByMe: false, IsFavorite: false,
                 CategoryLabel: MomentDisplay.CategoryLabel(m.Category),
-                MomentComplete: m.IsComplete,
-                MomentStatus: status,
-                PhotoUrl: photo,
-                StrokeData: drawing);
+                Prompt: m.Prompt,
+                ActionLabel: MomentDisplay.ActionLabel(m.ResponseKind),
+                CanRespond: !m.MyResponseSubmitted,
+                MyName: DisplayName,
+                MyAvatarUrl: AvatarUrl,
+                MyDone: m.MyResponseSubmitted,
+                PartnerName: PartnerName,
+                PartnerAvatarUrl: PartnerAvatarUrl,
+                PartnerDone: m.PartnerResponded,
+                MyPhotoUrl: myResponse?.PhotoUrl,
+                MyStrokeData: myResponse?.StrokeData,
+                PartnerPhotoUrl: partnerResponse?.PhotoUrl,
+                PartnerStrokeData: partnerResponse?.StrokeData);
         }
 
         return null;
