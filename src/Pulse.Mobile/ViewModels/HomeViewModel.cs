@@ -21,8 +21,6 @@ public record TodaysMomentVm(
     string Prompt,
     string ActionLabel,
     bool CanRespond,
-    bool IsComplete,
-    string StatusText,
     // Two-avatar progress row
     string MyName,
     string? MyAvatarUrl,
@@ -30,17 +28,12 @@ public record TodaysMomentVm(
     string PartnerName,
     string? PartnerAvatarUrl,
     bool PartnerDone,
-    // Optional thumbnails once completed — each person's own response, so both show when both
-    // answered with a photo/drawing (not just whichever happened to come first from the API).
+    // Each person's own response — the thumbnail slot always shows both (MomentThumbnailView falls
+    // back to that person's initials on their colour when they haven't shared a photo/drawing yet).
     string? MyPhotoUrl,
     string? MyStrokeData,
     string? PartnerPhotoUrl,
-    string? PartnerStrokeData)
-{
-    public bool HasThumbnail =>
-        !string.IsNullOrEmpty(MyPhotoUrl) || !string.IsNullOrEmpty(MyStrokeData) ||
-        !string.IsNullOrEmpty(PartnerPhotoUrl) || !string.IsNullOrEmpty(PartnerStrokeData);
-}
+    string? PartnerStrokeData);
 
 /// <summary>
 /// Home — quick-send (Mood / Need / Thought / Touch) up top, and below it the one latest pulse from
@@ -61,15 +54,6 @@ public partial class HomeViewModel(
     public string PartnerName => connectionSession.Partner?.DisplayName ?? "your partner";
     public string? PartnerAvatarUrl => connectionSession.Partner?.AvatarUrl;
 
-    /// <summary>Section subtitle for the moment card; reflects how far along the couple is.</summary>
-    public string MomentSubtitle => TodaysMoment switch
-    {
-        null => string.Empty,
-        { IsComplete: true } => "Completed together ❤️",
-        { CanRespond: false } => "Waiting for your partner",
-        _ => "Ready whenever you are."
-    };
-
     /// <summary>Card header — Home shows the partner's latest signal, so it's always "Latest from {name}".</summary>
     public string LatestHeader => $"Latest from {PartnerName}";
 
@@ -86,7 +70,6 @@ public partial class HomeViewModel(
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasMoment))]
-    [NotifyPropertyChangedFor(nameof(MomentSubtitle))]
     private TodaysMomentVm? _todaysMoment;
 
     [ObservableProperty]
@@ -149,13 +132,6 @@ public partial class HomeViewModel(
         try
         {
             var m = await api.GetTodayMomentAsync();
-            var status = m.IsComplete
-                ? "Together, today"
-                : m.MyResponseSubmitted
-                    ? "Waiting for your partner"
-                    : m.PartnerResponded
-                        ? $"{PartnerName} has answered — your turn"
-                        : "A new moment to share today";
 
             var myResponse = m.Responses.FirstOrDefault(r => r.SubmittedByMe);
             var partnerResponse = m.Responses.FirstOrDefault(r => !r.SubmittedByMe);
@@ -168,8 +144,6 @@ public partial class HomeViewModel(
                 m.Prompt,
                 MomentDisplay.ActionLabel(m.ResponseKind),
                 CanRespond: !m.MyResponseSubmitted,
-                IsComplete: m.IsComplete,
-                StatusText: status,
                 MyName: DisplayName,
                 MyAvatarUrl: AvatarUrl,
                 MyDone: m.MyResponseSubmitted,

@@ -9,7 +9,11 @@
     x:DataType="vm:ProfileViewModel"
     Title="Profile">
 
-    <Grid>
+    <!--  SafeAreaEdges None on the root Grid: without it, the Grid's own safe-area inset breaks the
+          large-title-to-small-title collapse animation on scroll (confirmed via
+          https://github.com/dotnet/maui/issues/33037#issuecomment-3657086914) — the title just
+          vanishes instead of shrinking, the same fix already applied to PulseDetailView.  -->
+    <Grid SafeAreaEdges="None">
     <ScrollView>
         <VerticalStackLayout Padding="20,24,20,32" Spacing="20">
 

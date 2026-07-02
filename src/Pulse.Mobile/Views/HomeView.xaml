@@ -9,18 +9,22 @@
     x:DataType="vm:HomeViewModel"
     Title="Home">
 
-    <Grid>
+    <!--  SafeAreaEdges None on the root Grid: without it, the Grid's own safe-area inset breaks the
+          large-title-to-small-title collapse animation on scroll (confirmed via
+          https://github.com/dotnet/maui/issues/33037#issuecomment-3657086914) — the title just
+          vanishes instead of shrinking, the same fix already applied to PulseDetailView.  -->
+    <Grid SafeAreaEdges="None">
     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsRefreshing}">
         <ScrollView>
             <VerticalStackLayout Padding="20,24,20,28" Spacing="26">
 
-                <!--  Today's Moment  -->
+                <!--  Today's Moment — the card itself (title, thumbnails, avatar checkmarks) already
+                      tells the story, so no status subtitle repeating "waiting for partner" here.  -->
                 <VerticalStackLayout IsVisible="{Binding HasMoment}" Spacing="10">
                     <HorizontalStackLayout Spacing="6">
                         <Label FontFamily="SansExtraBold" FontSize="20" Text="Today's Moment" TextColor="{DynamicResource Ink}" />
                         <Label FontSize="18" Text="✨" />
                     </HorizontalStackLayout>
-                    <Label Style="{StaticResource BodySmall}" Text="{Binding MomentSubtitle}" />
 
                     <Border Padding="18" Style="{StaticResource Card}">
                         <Border.GestureRecognizers>
@@ -47,18 +51,18 @@
                                     <Label FontFamily="SansExtraBold" FontSize="26" Text="{Binding TodaysMoment.Title}" TextColor="{DynamicResource Ink}" />
                                     <Label Style="{StaticResource BodyMedium}" Text="{Binding TodaysMoment.Prompt}" />
                                 </VerticalStackLayout>
-                                <!--  Thumbnail slot: partner's and mine overlap into a scattered-Polaroid
-                                      stack — each tile is nudged a few degrees off-axis in opposite
-                                      directions, so the back tile's corners peek out from behind the
-                                      front one instead of being fully hidden behind identical square
-                                      edges. Either tile shows its photo/drawing, or (via
+                                <!--  Thumbnail slot: partner's and mine always show, overlapping into a
+                                      scattered-Polaroid stack — each tile is nudged a few degrees
+                                      off-axis in opposite directions, so the back tile's corners peek out
+                                      from behind the front one instead of being fully hidden behind
+                                      identical square edges. Either tile shows its photo/drawing, or (via
                                       MomentThumbnailView) that person's initials on their colour if they
-                                      haven't answered with one yet, so an empty slot still reads as "this
-                                      person hasn't shared a photo" rather than nothing.  -->
+                                      haven't answered with one yet — always both slots, so it reads as
+                                      "here's what each of you shared" rather than appearing/disappearing
+                                      based on who happened to add a photo.  -->
                                 <Grid
                                     Grid.Column="1"
                                     HeightRequest="88"
-                                    IsVisible="{Binding TodaysMoment.HasThumbnail}"
                                     VerticalOptions="Center"
                                     WidthRequest="100">
                                     <controls:MomentThumbnailView
@@ -123,23 +127,13 @@
                                 </VerticalStackLayout>
                             </Grid>
 
-                            <!--  Action / status  -->
+                            <!--  Action: only shown while there's something to do. Once you've answered
+                                  (waiting on your partner, or both done), the card itself already tells
+                                  the story — no status pill nagging about a state you can't act on.  -->
                             <Button
                                 Command="{Binding OpenMomentCommand}"
                                 IsVisible="{Binding TodaysMoment.CanRespond}"
                                 Text="Start Moment" />
-                            <Border
-                                Padding="12"
-                                Background="{DynamicResource BrandSoft}"
-                                IsVisible="{Binding TodaysMoment.CanRespond, Converter={StaticResource InvertedBoolConverter}}"
-                                Stroke="Transparent"
-                                StrokeShape="RoundRectangle 12"
-                                StrokeThickness="0">
-                                <HorizontalStackLayout HorizontalOptions="Center" Spacing="6">
-                                    <controls:AppIcon Color="{DynamicResource Brand}" Icon="Heart" IsVisible="{Binding TodaysMoment.IsComplete}" Size="15" VerticalOptions="Center" />
-                                    <Label FontFamily="SansSemiBold" FontSize="13" Text="{Binding TodaysMoment.StatusText}" TextColor="{DynamicResource Brand}" VerticalOptions="Center" />
-                                </HorizontalStackLayout>
-                            </Border>
 
                         </VerticalStackLayout>
                     </Border>

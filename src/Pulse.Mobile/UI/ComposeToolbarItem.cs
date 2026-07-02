@@ -15,7 +15,7 @@ public static class ComposeToolbarItem
     public static void Add(Page page, ICommand command)
     {
 #if IOS
-        var icon = new FontImageSource { FontFamily = "mdi", Glyph = MdiIcons.Plus };
+        var icon = new FontImageSource { FontFamily = "mdi", Glyph = MdiIcons.SendOutline };
         icon.SetDynamicResource(FontImageSource.ColorProperty, "Brand");
 
         page.ToolbarItems.Add(new ToolbarItem

@@ -21,8 +21,10 @@
 
     <!--  Single-cell grid: the ScrollView fills from the very top (matching the Moment detail's root
           ScrollView exactly, so the hero starts at the same height), and the footer floats bottom-aligned
-          over it. SafeAreaEdges None on the ScrollView lets the hero bleed under the glass bar.  -->
-    <Grid>
+          over it. SafeAreaEdges None on both the Grid and the ScrollView lets the hero bleed under the
+          glass bar — without it on the Grid, its default safe-area inset stacks on top of the
+          ScrollView's own top padding and pushes the hero noticeably lower than Moment detail's.  -->
+    <Grid SafeAreaEdges="None">
 
         <ScrollView SafeAreaEdges="None">
             <VerticalStackLayout Padding="20,0,20,40" Spacing="20">

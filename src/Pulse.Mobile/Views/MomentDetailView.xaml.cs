@@ -11,11 +11,12 @@ public partial class MomentDetailView : ContentPage
 
     public MomentDetailView(MomentDetailViewModel vm)
     {
+        GlassNavBar.Enable(this);
+
         InitializeComponent();
         BindingContext = vm;
         // No large title here: the mockup has a compact bar (back + star) with the hero right below.
         // Make the nav bar transparent (Liquid Glass) and let the hero scroll underneath it.
-        GlassNavBar.Enable(this);
     }
 
     // Tap a voice response to play it: download the audio, then play from a stream. A second tap (or

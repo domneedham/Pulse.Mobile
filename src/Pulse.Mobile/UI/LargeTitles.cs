@@ -15,7 +15,12 @@ public static class LargeTitles
     public static void Enable(Microsoft.Maui.Controls.Page page)
     {
 #if IOS
-        page.On<iOS>().SetLargeTitleDisplay(LargeTitleDisplayMode.Always);
+        // Automatic (not Always) is what lets the system shrink the large title into the small inline
+        // title as the user scrolls, the native Settings/Mail/Photos behaviour. Always locks the title
+        // permanently large, so instead of shrinking smoothly it just vanishes with nothing to collapse
+        // into once GlassNavBar's identical standard/scroll-edge appearances remove the usual visual
+        // hand-off between the two bar states.
+        page.On<iOS>().SetLargeTitleDisplay(LargeTitleDisplayMode.Automatic);
         // Every large-title page also gets the translucent (Liquid Glass) bar with content scrolling
         // underneath it — the Settings / Music / Photos treatment, applied app-wide and consistently.
         GlassNavBar.Enable(page);

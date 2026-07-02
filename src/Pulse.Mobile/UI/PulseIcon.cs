@@ -34,6 +34,7 @@ public enum PulseIcon
     Stop,
     Sparkles,
     Plus,
+    Send,
 
     // Signal categories
     Mood,

@@ -6,7 +6,7 @@ using Pulse.ViewModels;
 namespace Pulse.UI.Controls;
 
 /// <summary>
-/// Global "send a signal" launcher, present on every tab (Home / Trail / Profile) with no page or
+/// Global "send a signal" launcher, present on every tab (Home / Trail / Together) with no page or
 /// ViewModel wiring required. Android only: a filled Material FAB floating bottom-right, just clear
 /// of the tab bar — the idiomatic Android pattern for an always-available action. iOS instead uses a
 /// native nav bar <c>ToolbarItem</c> on each page (Mail/Reminders-style compose button), since a FAB
@@ -36,7 +36,7 @@ public sealed class ComposeButton : Border
         shadow.SetDynamicResource(Shadow.BrushProperty, "Ink");
         Shadow = shadow;
 
-        var icon = new AppIcon { Icon = PulseIcon.Plus, Size = 26 };
+        var icon = new AppIcon { Icon = PulseIcon.Send, Size = 24 };
         this.SetDynamicResource(BackgroundProperty, "Brand");
         icon.SetDynamicResource(AppIcon.ColorProperty, "OnBrand");
 

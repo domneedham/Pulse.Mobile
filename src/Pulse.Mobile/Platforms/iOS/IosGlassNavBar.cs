@@ -14,11 +14,29 @@ internal static class IosGlassNavBar
 {
     public static void Attach(Page page)
     {
-        // The view controller / nav item only exist once the page is on screen; (re)wire on Loaded.
+        // Applying this only on Loaded (after the page has already laid out once under the default
+        // opaque bar) is what caused the visible "jump": first paint shows the normal bar + safe-area
+        // inset, then a frame later the appearance flips to transparent and EdgesForExtendedLayout
+        // kicks in, forcing a relayout the user can see. HandlerChanged fires as soon as the native
+        // UIViewController exists — before the page's first layout pass — so applying there instead
+        // means the very first frame already renders with the final, transparent-bar layout.
+        page.HandlerChanged -= OnHandlerChanged;
+        page.HandlerChanged += OnHandlerChanged;
+
+        // Loaded stays as a fallback for the rare case where NavigationController isn't attached yet
+        // at HandlerChanged time (e.g. the page isn't on a nav stack until it's actually pushed).
         page.Loaded -= OnLoaded;
         page.Loaded += OnLoaded;
 
-        if (page.IsLoaded)
+        if (page.Handler is not null)
+        {
+            Apply(page);
+        }
+    }
+
+    private static void OnHandlerChanged(object? sender, EventArgs e)
+    {
+        if (sender is Page page)
         {
             Apply(page);
         }

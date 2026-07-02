@@ -4,20 +4,15 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:Pulse.UI.Controls"
-    xmlns:resources="clr-namespace:Pulse.Resources"
     xmlns:vm="clr-namespace:Pulse.ViewModels"
     x:DataType="vm:TrailViewModel"
     Title="Your Trail">
 
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Command="{Binding OpenMomentsCommand}" Order="Primary" Priority="0">
-            <ToolbarItem.IconImageSource>
-                <FontImageSource FontFamily="mdi" Glyph="{x:Static resources:MdiIcons.CalendarHeartOutline}" Color="{DynamicResource Brand}" />
-            </ToolbarItem.IconImageSource>
-        </ToolbarItem>
-    </ContentPage.ToolbarItems>
-
-    <Grid>
+    <!--  SafeAreaEdges None on the root Grid: without it, the Grid's own safe-area inset breaks the
+          large-title-to-small-title collapse animation on scroll (confirmed via
+          https://github.com/dotnet/maui/issues/33037#issuecomment-3657086914) — the title just
+          vanishes instead of shrinking, the same fix already applied to PulseDetailView.  -->
+    <Grid SafeAreaEdges="None">
     <Grid Padding="20,8,20,0">
 
         <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsRefreshing}">
